@@ -10,16 +10,22 @@ RSpec.describe DiamondComicsParser do
   let(:previews_page) { File.read(test_url) }
   let(:comic_page) { File.read('samples/APR160066.html') }
 
-  it "correctly parses wednesday date" do
-    expect(parser.parse_wednesday_date(previews_page)).to eq(Date.new 2016, 6, 8)
-  end
+  context 'parses weekly releases list' do
+    it "wednesday date" do
+      expect(parser.parse_wednesday_date(previews_page)).to eq(Date.new 2016, 6, 8)
+    end
 
-  it "parses codes" do
-    expect(parser.parse_diamond_codes(previews_page)).to include('APR160066', 'FEB160013', 'MAR160268')
-  end
+    it "diamond codes" do
+      expect(parser.parse_diamond_codes(previews_page)).to include('APR160066', 'FEB160013', 'MAR160268')
+    end
 
-  it "parses only premier publishers and comics & graphic novels sections" do
-    expect(parser.parse_diamond_codes(previews_page)).not_to include('FEB162183', 'FEB162822')
+    it "only premier publishers and comics & graphic novels sections" do
+      expect(parser.parse_diamond_codes(previews_page)).not_to include('FEB162183', 'FEB162822')
+    end
+
+    it 'doesnt include codes for things that arent comics' do
+      expect(parser.parse_diamond_codes(previews_page)).not_to include('JUN150355', 'DEC150623', 'FEB160722')
+    end
   end
 
   context 'parses comic info' do
@@ -44,7 +50,15 @@ RSpec.describe DiamondComicsParser do
         descriptions = ['ART OF MIRRORS EDGE CATALYST HC', 
                         'SUPERMAN WONDER WOMAN HC VOL 04 DARK TRUTH']
         descriptions.each do |desc|
-          expect(parser.identify_type(desc)).to eq 'hardcover'
+          expect(parser.identify_item_type(desc)).to eq 'hardcover'
+        end
+      end
+
+      it 'softcover' do
+        descriptions = ['WARHAMMER DEATH OF THE OLD WORLD SC', 
+                        'SOME COMIC SC VOL 1']
+        descriptions.each do |desc|
+          expect(parser.identify_item_type(desc)).to eq 'softcover'
         end
       end
       
@@ -53,7 +67,7 @@ RSpec.describe DiamondComicsParser do
                         'INJECTION #10 CVR A SHALVEY & BELLAIRE (MR)',
                         'BIG TROUBLE IN LITTLE CHINA #25 (NOTE PRICE)']
         descriptions.each do |desc|
-          expect(parser.identify_type(desc)).to eq 'single_issue'
+          expect(parser.identify_item_type(desc)).to eq 'single_issue'
         end
       end
 
@@ -62,7 +76,7 @@ RSpec.describe DiamondComicsParser do
                         'NEW LONE WOLF AND CUB TP VOL 09 (MR)',
                         'DANGER GIRL PERMISSION TO THRILL COLORING BOOK TP']
         descriptions.each do |desc|
-          expect(parser.identify_type(desc)).to eq 'trade_paperback'
+          expect(parser.identify_item_type(desc)).to eq 'trade_paperback'
         end
       end
 
@@ -71,7 +85,7 @@ RSpec.describe DiamondComicsParser do
                         'DEADBEAT GN',
                         'THE UNIQUES GN VOL 01 COME TOGETHER']
         descriptions.each do |desc|
-          expect(parser.identify_type(desc)).to eq 'graphic_novel'
+          expect(parser.identify_item_type(desc)).to eq 'graphic_novel'
         end
       end
 
@@ -80,7 +94,7 @@ RSpec.describe DiamondComicsParser do
                         'BATMAN BLACK & WHITE STATUE DAVE MAZZUCCHELLI 2ND ED',
                         'AOD NECRONOMICON PX ZIP HOODIE XXL']
         descriptions.each do |desc|
-          expect(parser.identify_type(desc)).to eq 'merchandise'
+          expect(parser.identify_item_type(desc)).to eq 'merchandise'
         end
       end
     end
@@ -132,7 +146,8 @@ RSpec.describe DiamondComicsParser do
                                                         publisher: 'DARK HORSE COMICS',
                                                         creators: { writers: ['Mike Mignola', 'Scott Allie'], artists: ['Sebastian Fiumara'], cover_artists: ['Sebastian Fiumara']},
                                                         preview: 'In this standalone story, Abe seeks answers in his most crucial and secret place of origin, where his destiny is revealed.',
-                                                        suggested_price: '$3.99'
+                                                        suggested_price: '$3.99',
+                                                        type: 'single_issue'
     })
   end
 end

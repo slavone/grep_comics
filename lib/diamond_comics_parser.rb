@@ -2,11 +2,6 @@ class DiamondComicsParser
   CURRENT_WEEK = 'http://www.previewsworld.com/shipping/newreleases.txt'
   NEXT_WEEK = 'http://www.previewsworld.com/shipping/upcomingreleases.txt'
   CATALOG = 'http://www.previewsworld.com/Catalog/'
-  BLACKLISTED_WORDS = /(toys|magazines|merchandise|books)/i
-
-  def url_for_item(diamond_id)
-    CATALOG + diamond_id.to_s
-  end
 
   def get_page(page_url)
     url = URI.parse page_url
@@ -22,20 +17,41 @@ class DiamondComicsParser
     end
   end
 
+  def parse_diamond_codes(page)
+    diamond_ids = []
+    stop_after = "COMICS & GRAPHIC NOVELS" + "\r\n"
+    break_flag = false
+    
+    page.each_line do |line|
+      break if break_flag && line.match(/^[A-Z ]+\r\n/)
+      break_flag = true if line == stop_after
+      if identify_item_type(line) != 'merchandise'
+        matched = line.match /(?<code>[A-Z]{3}\d+)\s.+/
+        diamond_ids << matched[:code] if matched
+      end
+    end
+    diamond_ids
+  end
+
+  def url_for_item(diamond_id)
+    CATALOG + diamond_id.to_s
+  end
+
   def get_comic_page(code)
     get_page url_for_item(code)
   end
 
   def parse_comic_info(page)
-    comic = {}
     doc = Nokogiri::HTML(page).css('.StockCode')
-    comic[:title], comic[:issue_number] = parse_description(doc)
-    comic[:publisher] = parse_publisher(doc)
-    comic[:creators] = parse_creators(doc)
-    comic[:preview] = parse_preview(doc)
-    comic[:suggested_price] = parse_suggested_price(doc)
-    #types single_issue, tpb, hardcover, graphic novel or merch
-    comic
+    {
+      title: parse_title(doc),
+      issue_number: parse_issue_number(doc),
+      publisher: parse_publisher(doc),
+      creators: parse_creators(doc),
+      preview: parse_preview(doc),
+      suggested_price: parse_suggested_price(doc),
+      type: parse_item_type(doc)
+    }
   end
 
   SELECTORS = { description: '.StockCodeDescription',
@@ -46,18 +62,16 @@ class DiamondComicsParser
                 price: '.StockCodeInfo .StockCodeSrp'
               }.freeze
 
-  def get_node(doc, selector)
-    doc.css selector
-  end
-
   def get_description(noko_nodes)
-    desc_node = get_node noko_nodes, SELECTORS[:description]
+    desc_node = noko_nodes.css SELECTORS[:description]
     desc = desc_node.inner_text
   end
 
-  def identify_type(description)
+  def identify_item_type(description)
     if description.match /\bHC\b/
       'hardcover'
+    elsif description.match /\bSC\b/
+      'softcover'
     elsif description.match /#\d+/
       'single_issue'
     elsif description.match /\bTP\b/
@@ -68,6 +82,11 @@ class DiamondComicsParser
       'merchandise'
     end
   end
+  
+  def parse_item_type(noko_nodes)
+    desc = get_description(noko_nodes)
+    identify_item_type desc
+  end
 
   def parse_description(noko_nodes)
     desc = get_description(noko_nodes)
@@ -76,14 +95,28 @@ class DiamondComicsParser
     ''
   end
 
+  def parse_title(noko_nodes)
+    desc = get_description noko_nodes
+    matched = desc.match /(?<title>(\w|\s)+)#(?<number>\d+)/i
+    return matched[:title].strip if matched
+    ''
+  end
+
+  def parse_issue_number(noko_nodes)
+    desc = get_description noko_nodes
+    matched = desc.match /(?<title>(\w|\s)+)#(?<number>\d+)/i
+    return matched[:number] if matched
+    ''
+  end
+
   def parse_cover_image(noko_nodes)
-    img_node = get_node noko_nodes, SELECTORS[:cover_image]
+    img_node = noko_nodes.css SELECTORS[:cover_image]
     return img_node.attr('href').value unless img_node.empty?
     ''
   end
 
   def parse_publisher(noko_nodes)
-    publ_node = get_node noko_nodes, SELECTORS[:publisher]
+    publ_node = noko_nodes.css SELECTORS[:publisher]
     matched = publ_node.inner_text.match /publisher:\W+(?<publisher>(\w|\s)+)/i
     return matched[:publisher] if matched
     ''
@@ -102,7 +135,7 @@ class DiamondComicsParser
   end
 
   def parse_creators(noko_nodes)
-    creators_node = get_node noko_nodes, SELECTORS[:creators]
+    creators_node = noko_nodes.css SELECTORS[:creators]
 
     if creators_node.inner_text.match /\(W\/A\/CA\)/
       matched = creators_node.inner_text.match /\(W\/A\/CA\)(?:\W|\s)+(?<writer>(\w|\s|,)+)/i
@@ -122,29 +155,16 @@ class DiamondComicsParser
   end
 
   def parse_preview(noko_nodes)
-    preview_node = get_node noko_nodes, SELECTORS[:preview]
+    preview_node = noko_nodes.css SELECTORS[:preview]
     return preview_node.inner_text.strip unless preview_node.empty?
     ''
   end
 
   def parse_suggested_price(noko_nodes)
-    price_node = get_node noko_nodes, SELECTORS[:price]
+    price_node = noko_nodes.css SELECTORS[:price]
     matched = price_node.inner_text.match /srp:\s+(?<price>(\w|\s|\.|\$)+)/i
     return matched[:price].strip if matched
     ''
   end
   
-  def parse_diamond_codes(page)
-    diamond_ids = []
-    stop_after = "COMICS & GRAPHIC NOVELS" + "\r\n"
-    break_flag = false
-    
-    page.each_line do |line|
-      break if break_flag && line.match(/^[A-Z ]+\r\n/)
-      break_flag = true if line == stop_after
-      match_comic = line.match /(?<code>[A-Z]{3}\d+)\s.+/
-      diamond_ids << match_comic[:code] if match_comic
-    end
-    diamond_ids
-  end
 end
