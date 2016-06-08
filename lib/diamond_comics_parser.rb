@@ -34,20 +34,56 @@ class DiamondComicsParser
     comic[:creators] = parse_creators(doc)
     comic[:preview] = parse_preview(doc)
     comic[:suggested_price] = parse_suggested_price(doc)
+    #types single_issue, tpb, hardcover, graphic novel or merch
     comic
   end
 
+  SELECTORS = { description: '.StockCodeDescription',
+                cover_image: '.StockCodeImage a',
+                publisher: '.StockCodePublisher',
+                creators: '.StockCodeCreators',
+                preview: '.PreviewsHtml',
+                price: '.StockCodeInfo .StockCodeSrp'
+              }.freeze
+
+  def get_node(doc, selector)
+    doc.css selector
+  end
+
+  def get_description(noko_nodes)
+    desc_node = get_node noko_nodes, SELECTORS[:description]
+    desc = desc_node.inner_text
+  end
+
+  def identify_type(description)
+    if description.match /\bHC\b/
+      'hardcover'
+    elsif description.match /#\d+/
+      'single_issue'
+    elsif description.match /\bTP\b/
+      'trade_paperback'
+    elsif description.match(/\bGN\b/) || description.match(/\bOGN\b/)
+      'graphic_novel'
+    else
+      'merchandise'
+    end
+  end
+
   def parse_description(noko_nodes)
-    desc_css = '.StockCodeDescription'
-    desc_node = noko_nodes.css desc_css
-    matched = desc_node.inner_text.match /(?<title>(\w|\s)+)#(?<number>\d+)/i
+    desc = get_description(noko_nodes)
+    matched = desc.match /(?<title>(\w|\s)+)#(?<number>\d+)/i
     return matched[:title].strip, matched[:number] if matched
     ''
   end
 
+  def parse_cover_image(noko_nodes)
+    img_node = get_node noko_nodes, SELECTORS[:cover_image]
+    return img_node.attr('href').value unless img_node.empty?
+    ''
+  end
+
   def parse_publisher(noko_nodes)
-    publ_css = '.StockCodePublisher'
-    publ_node = noko_nodes.css publ_css
+    publ_node = get_node noko_nodes, SELECTORS[:publisher]
     matched = publ_node.inner_text.match /publisher:\W+(?<publisher>(\w|\s)+)/i
     return matched[:publisher] if matched
     ''
@@ -66,8 +102,7 @@ class DiamondComicsParser
   end
 
   def parse_creators(noko_nodes)
-    creators_css = '.StockCodeCreators'
-    creators_node = noko_nodes.css creators_css
+    creators_node = get_node noko_nodes, SELECTORS[:creators]
 
     if creators_node.inner_text.match /\(W\/A\/CA\)/
       matched = creators_node.inner_text.match /\(W\/A\/CA\)(?:\W|\s)+(?<writer>(\w|\s|,)+)/i
@@ -87,15 +122,13 @@ class DiamondComicsParser
   end
 
   def parse_preview(noko_nodes)
-    preview_css = '.PreviewsHtml'
-    preview_node = noko_nodes.css preview_css
+    preview_node = get_node noko_nodes, SELECTORS[:preview]
     return preview_node.inner_text.strip unless preview_node.empty?
     ''
   end
 
   def parse_suggested_price(noko_nodes)
-    price_css = '.StockCodeInfo .StockCodeSrp'
-    price_node = noko_nodes.css price_css
+    price_node = get_node noko_nodes, SELECTORS[:price]
     matched = price_node.inner_text.match /srp:\s+(?<price>(\w|\s|\.|\$)+)/i
     return matched[:price].strip if matched
     ''

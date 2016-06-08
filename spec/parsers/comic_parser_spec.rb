@@ -31,8 +31,58 @@ RSpec.describe DiamondComicsParser do
       expect(parser.parse_description(@noko_doc)).to eq(['ABE SAPIEN', '34'])
     end
 
+    it 'cover image' do
+      expect(parser.parse_cover_image(@noko_doc)).to eq('/catalogimages/STK_IMAGES/STL000001-020000/STL006317.jpg')
+    end
+
     it 'publisher name' do
       expect(parser.parse_publisher(@noko_doc)).to eq('DARK HORSE COMICS')
+    end
+
+    context 'identifies types' do
+      it 'hardcover' do
+        descriptions = ['ART OF MIRRORS EDGE CATALYST HC', 
+                        'SUPERMAN WONDER WOMAN HC VOL 04 DARK TRUTH']
+        descriptions.each do |desc|
+          expect(parser.identify_type(desc)).to eq 'hardcover'
+        end
+      end
+      
+      it 'single_issue' do
+        descriptions = ['ACTION COMICS #957', 
+                        'INJECTION #10 CVR A SHALVEY & BELLAIRE (MR)',
+                        'BIG TROUBLE IN LITTLE CHINA #25 (NOTE PRICE)']
+        descriptions.each do |desc|
+          expect(parser.identify_type(desc)).to eq 'single_issue'
+        end
+      end
+
+      it 'trade_paperback' do
+        descriptions = ['HERCULES TP VOL 01 STILL GOING STRONG', 
+                        'NEW LONE WOLF AND CUB TP VOL 09 (MR)',
+                        'DANGER GIRL PERMISSION TO THRILL COLORING BOOK TP']
+        descriptions.each do |desc|
+          expect(parser.identify_type(desc)).to eq 'trade_paperback'
+        end
+      end
+
+      it 'graphic_novel' do
+        descriptions = ['WARCRAFT BONDS OF BROTHERHOOD OGN', 
+                        'DEADBEAT GN',
+                        'THE UNIQUES GN VOL 01 COME TOGETHER']
+        descriptions.each do |desc|
+          expect(parser.identify_type(desc)).to eq 'graphic_novel'
+        end
+      end
+
+      it 'other, not comics' do
+        descriptions = ['HALO 5 GUARDIANS BEST OF AF', 
+                        'BATMAN BLACK & WHITE STATUE DAVE MAZZUCCHELLI 2ND ED',
+                        'AOD NECRONOMICON PX ZIP HOODIE XXL']
+        descriptions.each do |desc|
+          expect(parser.identify_type(desc)).to eq 'merchandise'
+        end
+      end
     end
 
     context 'creator names' do
