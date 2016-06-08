@@ -129,14 +129,34 @@ RSpec.describe DiamondComicsParser do
                                                          artists: ['Sebastian Fiumara'], 
                                                          cover_artists: ['Sebastian Fiumara'] })
       end
+
+      it 'when unexpected symbols in creator names' do
+        div = '<div class="StockCodeCreators">(W) Peter J. Tomasi (A) Doug Mahnke & Various (CA) Doug Mahnke</div>'
+        @noko_doc = Nokogiri::HTML(div)
+        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Peter J. Tomasi'], 
+                                                         artists: ['Doug Mahnke & Various'], 
+                                                         cover_artists: ['Doug Mahnke'] })
+      end
+
+      it 'when there is no writer' do
+        div = '<div class="StockCodeCreators">(A/CA) J. Scott Campbell</div>'
+        @noko_doc = Nokogiri::HTML(div)
+        expect(parser.parse_creators(@noko_doc)).to eq({ writers: [], 
+                                                         artists: ['J. Scott Campbell'], 
+                                                         cover_artists: ['J. Scott Campbell'] })
+      end
     end
 
     it 'preview' do
       expect(parser.parse_preview(@noko_doc)).to include('In this standalone story, Abe seeks answers in his most crucial and secret place of origin, where his destiny is revealed.')
     end
 
+    it 'diamond_id' do
+      expect(parser.parse_diamond_id(@noko_doc)).to eq('APR160066')
+    end
+
     it 'suggested price' do
-        expect(parser.parse_suggested_price(@noko_doc)).to eq('$3.99')
+      expect(parser.parse_suggested_price(@noko_doc)).to eq('$3.99')
     end
   end
 
@@ -147,7 +167,8 @@ RSpec.describe DiamondComicsParser do
                                                         creators: { writers: ['Mike Mignola', 'Scott Allie'], artists: ['Sebastian Fiumara'], cover_artists: ['Sebastian Fiumara']},
                                                         preview: 'In this standalone story, Abe seeks answers in his most crucial and secret place of origin, where his destiny is revealed.',
                                                         suggested_price: '$3.99',
-                                                        type: 'single_issue'
+                                                        type: 'single_issue',
+                                                        diamond_id: 'APR160066'
     })
   end
 end

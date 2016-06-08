@@ -44,6 +44,7 @@ class DiamondComicsParser
   def parse_comic_info(page)
     doc = Nokogiri::HTML(page).css('.StockCode')
     {
+      diamond_id: parse_diamond_id(doc),
       title: parse_title(doc),
       issue_number: parse_issue_number(doc),
       publisher: parse_publisher(doc),
@@ -54,12 +55,38 @@ class DiamondComicsParser
     }
   end
 
+  def pretty_print(comic)
+    puts '----------------------'
+    puts comic[:diamond_id]
+    puts comic[:title]
+    puts comic[:issue_number]
+    puts comic[:publisher]
+    puts 'Creators:'
+    comic[:creators].each do |key, value|
+      puts "#{key}: #{value.inspect}"
+    end
+    puts comic[:preview]
+    puts comic[:type]
+    puts comic[:suggested_price]
+  end
+
+  def test_process
+    list_page = get_page CURRENT_WEEK
+    diamond_ids = parse_diamond_codes(list_page)
+    diamond_ids.each do |code|
+      comic_page = get_comic_page code
+      comic = parse_comic_info comic_page
+      pretty_print comic
+    end
+  end
+
   SELECTORS = { description: '.StockCodeDescription',
                 cover_image: '.StockCodeImage a',
                 publisher: '.StockCodePublisher',
                 creators: '.StockCodeCreators',
                 preview: '.PreviewsHtml',
-                price: '.StockCodeInfo .StockCodeSrp'
+                price: '.StockCodeInfo .StockCodeSrp',
+                diamond_id: '.StockCodeDiamdNo'
               }.freeze
 
   def get_description(noko_nodes)
@@ -136,19 +163,24 @@ class DiamondComicsParser
 
   def parse_creators(noko_nodes)
     creators_node = noko_nodes.css SELECTORS[:creators]
+    creators_text = creators_node.inner_text
 
-    if creators_node.inner_text.match /\(W\/A\/CA\)/
-      matched = creators_node.inner_text.match /\(W\/A\/CA\)(?:\W|\s)+(?<writer>(\w|\s|,)+)/i
+    if creators_text.match /\(W\/A\/CA\)/
+      matched = creators_text.match /\(W\/A\/CA\)(?:\W|\s)+(?<writer>.+)/i
       return build_creators_hash matched[:writer], matched[:writer], matched[:writer] if matched
-    elsif creators_node.inner_text.match /\(W\/A\)/
-      matched = creators_node.inner_text.match /\(W\/A\)(?:\W|\s)+(?<writer_artist>(\w|\s|,)+)(?:\W|\s)+\(CA\)(?:\W|\s)(?<cover_artist>(\w|\s|,)+)/i
+    elsif creators_text.match /\(W\/A\)/
+      matched = creators_text.match /\(W\/A\)(?:\W|\s)+(?<writer_artist>.+)(?:\W|\s)+\(CA\)(?:\W|\s)(?<cover_artist>.+)/i
       return build_creators_hash matched[:writer_artist], matched[:writer_artist], matched[:cover_artist] if matched
-    elsif creators_node.inner_text.match /\(A\/CA\)/
-      matched = creators_node.inner_text.match /\(W\)(?:\W|\s)+(?<writer>(\w|\s|,)+)(?:\W|\s)+\(A\/CA\)(?:\W|\s)(?<artist>(\w|\s|,)+)/i
-      return build_creators_hash matched[:writer], matched[:artist], matched[:artist] if matched
-
+    elsif creators_text.match /\(A\/CA\)/
+      if creators_text.match /\(W\)/
+        matched = creators_text.match /\(W\)(?:\W|\s)+(?<writer>.+)(?:\W|\s)+\(A\/CA\)(?:\W|\s)(?<artist>.+)/i
+        return build_creators_hash matched[:writer], matched[:artist], matched[:artist] if matched
+      else
+        matched = creators_text.match /\(A\/CA\)(?:\W|\s)(?<artist>.+)/i
+        return build_creators_hash [], matched[:artist], matched[:artist] if matched
+      end
     else
-      matched = creators_node.inner_text.match /\(W\)(?:\W|\s)+(?<writer>(\w|\s|,)+)(?:\W|\s)+\(A\)(?:\W|\s)(?<artist>(\w|\s|,)+)(?:\W|\s)+\(CA\)(?:\W|\s)(?<cover_artist>(\w|\s|,)+)/i
+      matched = creators_text.match /\(W\)(?<writer>.+)\(A\)(?<artist>.+)\(CA\)(?<cover_artist>.+)/i
       return build_creators_hash matched[:writer], matched[:artist], matched[:cover_artist] if matched
     end
     return build_creators_hash
@@ -157,6 +189,13 @@ class DiamondComicsParser
   def parse_preview(noko_nodes)
     preview_node = noko_nodes.css SELECTORS[:preview]
     return preview_node.inner_text.strip unless preview_node.empty?
+    ''
+  end
+
+  def parse_diamond_id(noko_nodes)
+    diamond_id_node = noko_nodes.css SELECTORS[:diamond_id]
+    matched = diamond_id_node.inner_text.match /item code:\s+(?<diamond_id>(\w|\s|\.|\$)+)/i
+    return matched[:diamond_id].strip if matched
     ''
   end
 
