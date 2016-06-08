@@ -35,10 +35,54 @@ RSpec.describe DiamondComicsParser do
       expect(parser.parse_publisher(@noko_doc)).to eq('DARK HORSE COMICS')
     end
 
-    it 'creator names' do
-      expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Mike Mignola', 'Scott Allie'], 
-                                                       artists: ['Sebastian Fiumara'], 
-                                                       cover_artists: ['Sebastian Fiumara'] })
+    context 'creator names' do
+      it 'when (W) (A) (CA)' do
+        div = '<div class="StockCodeCreators">(W) Mike Mignola, Scott Allie (A) Sebastian Fiumara (CA) Frank Quitely</div>'
+        @noko_doc = Nokogiri::HTML(div)
+        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Mike Mignola', 'Scott Allie'], 
+                                                         artists: ['Sebastian Fiumara'], 
+                                                         cover_artists: ['Frank Quitely'] })
+      end
+
+      it 'when (W/A) and (CA)' do
+        div = '<div class="StockCodeCreators">(W/A) Mike Mignola, Scott Allie  (CA) Frank Quitely</div>'
+        @noko_doc = Nokogiri::HTML(div)
+        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Mike Mignola', 'Scott Allie'], 
+                                                         artists: ['Mike Mignola', 'Scott Allie'], 
+                                                         cover_artists: ['Frank Quitely'] })
+      end
+
+      it 'when (W/A/CA)' do
+        div = '<div class="StockCodeCreators">(W/A/CA) Mike Mignola, Scott Allie, Frank Quitely</div>'
+        @noko_doc = Nokogiri::HTML(div)
+        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Mike Mignola', 'Scott Allie', 'Frank Quitely'], 
+                                                         artists: ['Mike Mignola', 'Scott Allie', 'Frank Quitely'], 
+                                                         cover_artists: ['Mike Mignola', 'Scott Allie', 'Frank Quitely'] })
+      end
+
+      it 'when (W) and (A/CA)' do
+        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Mike Mignola', 'Scott Allie'], 
+                                                         artists: ['Sebastian Fiumara'], 
+                                                         cover_artists: ['Sebastian Fiumara'] })
+      end
     end
+
+    it 'preview' do
+      expect(parser.parse_preview(@noko_doc)).to include('In this standalone story, Abe seeks answers in his most crucial and secret place of origin, where his destiny is revealed.')
+    end
+
+    it 'suggested price' do
+        expect(parser.parse_suggested_price(@noko_doc)).to eq('$3.99')
+    end
+  end
+
+  it 'builds correct hash from parsed page' do
+    expect(parser.parse_comic_info(comic_page)).to eq({ title: 'ABE SAPIEN',
+                                                        issue_number: '34',
+                                                        publisher: 'DARK HORSE COMICS',
+                                                        creators: { writers: ['Mike Mignola', 'Scott Allie'], artists: ['Sebastian Fiumara'], cover_artists: ['Sebastian Fiumara']},
+                                                        preview: 'In this standalone story, Abe seeks answers in his most crucial and secret place of origin, where his destiny is revealed.',
+                                                        suggested_price: '$3.99'
+    })
   end
 end

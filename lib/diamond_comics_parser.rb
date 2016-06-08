@@ -29,8 +29,11 @@ class DiamondComicsParser
   def parse_comic_info(page)
     comic = {}
     doc = Nokogiri::HTML(page).css('.StockCode')
-    comic[:title] = match[:title]
-    comic[:number] = match[:number]
+    comic[:title], comic[:issue_number] = parse_description(doc)
+    comic[:publisher] = parse_publisher(doc)
+    comic[:creators] = parse_creators(doc)
+    comic[:preview] = parse_preview(doc)
+    comic[:suggested_price] = parse_suggested_price(doc)
     comic
   end
 
@@ -67,18 +70,35 @@ class DiamondComicsParser
     creators_node = noko_nodes.css creators_css
 
     if creators_node.inner_text.match /\(W\/A\/CA\)/
-      puts 'FULL STACK BABY'
+      matched = creators_node.inner_text.match /\(W\/A\/CA\)(?:\W|\s)+(?<writer>(\w|\s|,)+)/i
+      return build_creators_hash matched[:writer], matched[:writer], matched[:writer] if matched
     elsif creators_node.inner_text.match /\(W\/A\)/
-      puts 'writer/artist and cover artist'
+      matched = creators_node.inner_text.match /\(W\/A\)(?:\W|\s)+(?<writer_artist>(\w|\s|,)+)(?:\W|\s)+\(CA\)(?:\W|\s)(?<cover_artist>(\w|\s|,)+)/i
+      return build_creators_hash matched[:writer_artist], matched[:writer_artist], matched[:cover_artist] if matched
     elsif creators_node.inner_text.match /\(A\/CA\)/
       matched = creators_node.inner_text.match /\(W\)(?:\W|\s)+(?<writer>(\w|\s|,)+)(?:\W|\s)+\(A\/CA\)(?:\W|\s)(?<artist>(\w|\s|,)+)/i
-      puts matched.inspect
       return build_creators_hash matched[:writer], matched[:artist], matched[:artist] if matched
 
     else
-      puts 'all different'
+      matched = creators_node.inner_text.match /\(W\)(?:\W|\s)+(?<writer>(\w|\s|,)+)(?:\W|\s)+\(A\)(?:\W|\s)(?<artist>(\w|\s|,)+)(?:\W|\s)+\(CA\)(?:\W|\s)(?<cover_artist>(\w|\s|,)+)/i
+      return build_creators_hash matched[:writer], matched[:artist], matched[:cover_artist] if matched
     end
     return build_creators_hash
+  end
+
+  def parse_preview(noko_nodes)
+    preview_css = '.PreviewsHtml'
+    preview_node = noko_nodes.css preview_css
+    return preview_node.inner_text.strip unless preview_node.empty?
+    ''
+  end
+
+  def parse_suggested_price(noko_nodes)
+    price_css = '.StockCodeInfo .StockCodeSrp'
+    price_node = noko_nodes.css price_css
+    matched = price_node.inner_text.match /srp:\s+(?<price>(\w|\s|\.|\$)+)/i
+    return matched[:price].strip if matched
+    ''
   end
   
   def parse_diamond_codes(page)
