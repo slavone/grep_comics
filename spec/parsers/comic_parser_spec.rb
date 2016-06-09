@@ -33,9 +33,78 @@ RSpec.describe DiamondComicsParser do
       @noko_doc = Nokogiri::HTML(comic_page).css('.StockCode')
     end
 
-    it 'title and number from description' do 
-      expect(parser.parse_description(@noko_doc)).to eq(['ABE SAPIEN', '34'])
+    context 'description block' do
+      it 'title' do
+        expect(parser.parse_title(@noko_doc)).to eq('ABE SAPIEN')
+      end
+
+      it 'issue_number' do
+        expect(parser.parse_issue_number(@noko_doc)).to eq('34')
+      end
+
+      context 'identifies types' do
+        it 'hardcover' do
+          descriptions = ['ART OF MIRRORS EDGE CATALYST HC', 
+                          'SUPERMAN WONDER WOMAN HC VOL 04 DARK TRUTH']
+          descriptions.each do |desc|
+            expect(parser.identify_item_type(desc)).to eq 'hardcover'
+          end
+        end
+
+
+        it 'softcover' do
+          descriptions = ['WARHAMMER DEATH OF THE OLD WORLD SC', 
+                          'SOME COMIC SC VOL 1']
+          descriptions.each do |desc|
+            expect(parser.identify_item_type(desc)).to eq 'softcover'
+          end
+        end
+        
+        it 'single_issue' do
+          descriptions = ['ACTION COMICS #957', 
+                          'INJECTION #10 CVR A SHALVEY & BELLAIRE (MR)',
+                          'BIG TROUBLE IN LITTLE CHINA #25 (NOTE PRICE)']
+          descriptions.each do |desc|
+            expect(parser.identify_item_type(desc)).to eq 'single_issue'
+          end
+        end
+
+        it 'trade_paperback' do
+          descriptions = ['HERCULES TP VOL 01 STILL GOING STRONG', 
+                          'NEW LONE WOLF AND CUB TP VOL 09 (MR)',
+                          'DANGER GIRL PERMISSION TO THRILL COLORING BOOK TP']
+          descriptions.each do |desc|
+            expect(parser.identify_item_type(desc)).to eq 'trade_paperback'
+          end
+        end
+
+        it 'graphic_novel' do
+          descriptions = ['WARCRAFT BONDS OF BROTHERHOOD OGN', 
+                          'DEADBEAT GN',
+                          'THE UNIQUES GN VOL 01 COME TOGETHER']
+          descriptions.each do |desc|
+            expect(parser.identify_item_type(desc)).to eq 'graphic_novel'
+          end
+        end
+
+        it 'merch and other stuff' do
+          descriptions = ['HALO 5 GUARDIANS BEST OF AF', 
+                          'BATMAN BLACK & WHITE STATUE DAVE MAZZUCCHELLI 2ND ED',
+                          'AOD NECRONOMICON PX ZIP HOODIE XXL']
+          descriptions.each do |desc|
+            expect(parser.identify_item_type(desc)).to eq 'merchandise'
+          end
+        end
+
+        it 'correctly if title has hc sc tp gn in it' do
+          expect(parser.identify_item_type('SCHOOL OF ROCK HC')).to eq 'hardcover'
+          expect(parser.identify_item_type('SCP-325 TP')).to eq 'trade_paperback'
+          expect(parser.identify_item_type('SCHOOL OF ROCK #420')).to eq 'single_issue'
+          expect(parser.identify_item_type('ADVENTURES OF GNOMES SC')).to eq 'softcover'
+        end
+      end
     end
+
 
     it 'cover image' do
       expect(parser.parse_cover_image(@noko_doc)).to eq('/catalogimages/STK_IMAGES/STL000001-020000/STL006317.jpg')
@@ -45,59 +114,6 @@ RSpec.describe DiamondComicsParser do
       expect(parser.parse_publisher(@noko_doc)).to eq('DARK HORSE COMICS')
     end
 
-    context 'identifies types' do
-      it 'hardcover' do
-        descriptions = ['ART OF MIRRORS EDGE CATALYST HC', 
-                        'SUPERMAN WONDER WOMAN HC VOL 04 DARK TRUTH']
-        descriptions.each do |desc|
-          expect(parser.identify_item_type(desc)).to eq 'hardcover'
-        end
-      end
-
-      it 'softcover' do
-        descriptions = ['WARHAMMER DEATH OF THE OLD WORLD SC', 
-                        'SOME COMIC SC VOL 1']
-        descriptions.each do |desc|
-          expect(parser.identify_item_type(desc)).to eq 'softcover'
-        end
-      end
-      
-      it 'single_issue' do
-        descriptions = ['ACTION COMICS #957', 
-                        'INJECTION #10 CVR A SHALVEY & BELLAIRE (MR)',
-                        'BIG TROUBLE IN LITTLE CHINA #25 (NOTE PRICE)']
-        descriptions.each do |desc|
-          expect(parser.identify_item_type(desc)).to eq 'single_issue'
-        end
-      end
-
-      it 'trade_paperback' do
-        descriptions = ['HERCULES TP VOL 01 STILL GOING STRONG', 
-                        'NEW LONE WOLF AND CUB TP VOL 09 (MR)',
-                        'DANGER GIRL PERMISSION TO THRILL COLORING BOOK TP']
-        descriptions.each do |desc|
-          expect(parser.identify_item_type(desc)).to eq 'trade_paperback'
-        end
-      end
-
-      it 'graphic_novel' do
-        descriptions = ['WARCRAFT BONDS OF BROTHERHOOD OGN', 
-                        'DEADBEAT GN',
-                        'THE UNIQUES GN VOL 01 COME TOGETHER']
-        descriptions.each do |desc|
-          expect(parser.identify_item_type(desc)).to eq 'graphic_novel'
-        end
-      end
-
-      it 'other, not comics' do
-        descriptions = ['HALO 5 GUARDIANS BEST OF AF', 
-                        'BATMAN BLACK & WHITE STATUE DAVE MAZZUCCHELLI 2ND ED',
-                        'AOD NECRONOMICON PX ZIP HOODIE XXL']
-        descriptions.each do |desc|
-          expect(parser.identify_item_type(desc)).to eq 'merchandise'
-        end
-      end
-    end
 
     context 'creator names' do
       it 'when (W) (A) (CA)' do
@@ -158,6 +174,12 @@ RSpec.describe DiamondComicsParser do
     it 'suggested price' do
       expect(parser.parse_suggested_price(@noko_doc)).to eq('$3.99')
     end
+
+    it 'shipping date' do
+      expect(parser.parse_shipping_date(@noko_doc)).to eq(Date.new 2016, 6, 8)
+    end
+
+
   end
 
   it 'builds correct hash from parsed page' do
@@ -168,7 +190,8 @@ RSpec.describe DiamondComicsParser do
                                                         preview: 'In this standalone story, Abe seeks answers in his most crucial and secret place of origin, where his destiny is revealed.',
                                                         suggested_price: '$3.99',
                                                         type: 'single_issue',
-                                                        diamond_id: 'APR160066'
+                                                        diamond_id: 'APR160066',
+                                                        shipping_date: Date.new(2016, 6, 8)
     })
   end
 end

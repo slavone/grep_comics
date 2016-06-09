@@ -10,11 +10,8 @@ class DiamondComicsParser
 
   def parse_wednesday_date(page)
     match = page.match /(?<month>\d{1,2})\/(?<day>\d{1,2})\/(?<year>\d{4})/ 
-    if match
-      Date.parse "#{match[:day]}.#{match[:month]}.#{match[:year]}"
-    else
-      ''
-    end
+    return Date.new match[:year].to_i, match[:month].to_i, match[:day].to_i if match
+    ''
   end
 
   def parse_diamond_codes(page)
@@ -51,7 +48,8 @@ class DiamondComicsParser
       creators: parse_creators(doc),
       preview: parse_preview(doc),
       suggested_price: parse_suggested_price(doc),
-      type: parse_item_type(doc)
+      type: parse_item_type(doc),
+      shipping_date: parse_shipping_date(doc)
     }
   end
 
@@ -70,10 +68,11 @@ class DiamondComicsParser
     puts comic[:suggested_price]
   end
 
-  def test_process
+  def test_process(ids = nil)
     list_page = get_page CURRENT_WEEK
     diamond_ids = parse_diamond_codes(list_page)
-    diamond_ids.each do |code|
+    ids = diamond_ids.size unless ids
+    diamond_ids.first(ids).each do |code|
       comic_page = get_comic_page code
       comic = parse_comic_info comic_page
       pretty_print comic
@@ -86,40 +85,34 @@ class DiamondComicsParser
                 creators: '.StockCodeCreators',
                 preview: '.PreviewsHtml',
                 price: '.StockCodeInfo .StockCodeSrp',
-                diamond_id: '.StockCodeDiamdNo'
-              }.freeze
+                diamond_id: '.StockCodeDiamdNo',
+                shipping_date: '.StockCodeInShopsDate'
+  }.freeze
 
   def get_description(noko_nodes)
     desc_node = noko_nodes.css SELECTORS[:description]
     desc = desc_node.inner_text
   end
 
+  ITEM_TYPES = {
+    'HC' => 'hardcover',
+    'SC' => 'softcover',
+    '#' => 'single_issue',
+    'TP' => 'trade_paperback',
+    'GN' => 'graphic_novel',
+    'OGN' => 'graphic_novel'
+  }.freeze
+
   def identify_item_type(description)
-    if description.match /\bHC\b/
-      'hardcover'
-    elsif description.match /\bSC\b/
-      'softcover'
-    elsif description.match /#\d+/
-      'single_issue'
-    elsif description.match /\bTP\b/
-      'trade_paperback'
-    elsif description.match(/\bGN\b/) || description.match(/\bOGN\b/)
-      'graphic_novel'
-    else
-      'merchandise'
-    end
+    matched = description.match /\b(?<type>HC|SC|TP|GN|OGN)\b/
+    matched = description.match /(?<type>#)/ unless matched
+    return ITEM_TYPES[matched[:type]] if matched
+    'merchandise'
   end
   
   def parse_item_type(noko_nodes)
     desc = get_description(noko_nodes)
     identify_item_type desc
-  end
-
-  def parse_description(noko_nodes)
-    desc = get_description(noko_nodes)
-    matched = desc.match /(?<title>(\w|\s)+)#(?<number>\d+)/i
-    return matched[:title].strip, matched[:number] if matched
-    ''
   end
 
   def parse_title(noko_nodes)
@@ -203,6 +196,13 @@ class DiamondComicsParser
     price_node = noko_nodes.css SELECTORS[:price]
     matched = price_node.inner_text.match /srp:\s+(?<price>(\w|\s|\.|\$)+)/i
     return matched[:price].strip if matched
+    ''
+  end
+
+  def parse_shipping_date(noko_nodes)
+    date_node = noko_nodes.css SELECTORS[:shipping_date]
+    matched = date_node.inner_text.match /in shops:\s+(?<month>\d+)\/(?<day>\d+)\/(?<year>\d+)/i
+    return Date.new matched[:year].to_i, matched[:month].to_i, matched[:day].to_i if matched
     ''
   end
   
