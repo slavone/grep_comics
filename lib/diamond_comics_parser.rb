@@ -16,6 +16,7 @@ class DiamondComicsParser
 
   def parse_diamond_codes(page)
     diamond_ids = []
+    #this is the last block of comics
     stop_after = "COMICS & GRAPHIC NOVELS" + "\r\n"
     break_flag = false
     
@@ -117,8 +118,16 @@ class DiamondComicsParser
 
   def parse_title(noko_nodes)
     desc = get_description noko_nodes
-    matched = desc.match /(?<title>(\w|\s)+)#(?<number>\d+)/i
-    return matched[:title].strip if matched
+    item_type = identify_item_type desc
+    case item_type
+    #when 'hardcover', 'softcover', 'trade_paperback'
+    #when 'graphic_novel'
+    when 'single_issue'
+      matched = desc.match /(?<title>(\w|\s)+)#(?<number>\d+)/i
+      return matched[:title].strip if matched
+    else
+      return desc
+    end
     ''
   end
 
@@ -151,32 +160,22 @@ class DiamondComicsParser
   end
 
   def parse_creators_string(creators)
+    #should probably gsub out & Various
     creators.kind_of?(String) ? creators.split(',').map(&:strip) : creators
   end
 
   def parse_creators(noko_nodes)
     creators_node = noko_nodes.css SELECTORS[:creators]
     creators_text = creators_node.inner_text
+    writers, artists, cover_artists = '', '', ''
 
-    if creators_text.match /\(W\/A\/CA\)/
-      matched = creators_text.match /\(W\/A\/CA\)(?:\W|\s)+(?<writer>.+)/i
-      return build_creators_hash matched[:writer], matched[:writer], matched[:writer] if matched
-    elsif creators_text.match /\(W\/A\)/
-      matched = creators_text.match /\(W\/A\)(?:\W|\s)+(?<writer_artist>.+)(?:\W|\s)+\(CA\)(?:\W|\s)(?<cover_artist>.+)/i
-      return build_creators_hash matched[:writer_artist], matched[:writer_artist], matched[:cover_artist] if matched
-    elsif creators_text.match /\(A\/CA\)/
-      if creators_text.match /\(W\)/
-        matched = creators_text.match /\(W\)(?:\W|\s)+(?<writer>.+)(?:\W|\s)+\(A\/CA\)(?:\W|\s)(?<artist>.+)/i
-        return build_creators_hash matched[:writer], matched[:artist], matched[:artist] if matched
-      else
-        matched = creators_text.match /\(A\/CA\)(?:\W|\s)(?<artist>.+)/i
-        return build_creators_hash [], matched[:artist], matched[:artist] if matched
-      end
-    else
-      matched = creators_text.match /\(W\)(?<writer>.+)\(A\)(?<artist>.+)\(CA\)(?<cover_artist>.+)/i
-      return build_creators_hash matched[:writer], matched[:artist], matched[:cover_artist] if matched
+    creators_text.scan(/\((?:W|A|CA|W\/A|W\/A\/CA|A\/CA|W\/CA)\)[\s\W]+[\p{L}.,&\s]+/).each do |creators_block|
+      creators = creators_block.match /\(.+\)[\W\s]+(?<list>[\p{L}.,&\s]+)/
+      writers << creators[:list].strip if creators_block.match /(?<=\(|\/)W(?=\)|\/)/
+      artists << creators[:list].strip if creators_block.match /(?<=\(|\/)A(?=\)|\/)/
+      cover_artists << creators[:list].strip if creators_block.match /(?<=\(|\/)CA(?=\)|\/)/
     end
-    return build_creators_hash
+    build_creators_hash writers, artists, cover_artists
   end
 
   def parse_preview(noko_nodes)

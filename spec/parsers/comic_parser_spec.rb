@@ -34,9 +34,18 @@ RSpec.describe DiamondComicsParser do
     end
 
     context 'description block' do
-      it 'title' do
+      it 'title of single issue' do
         expect(parser.parse_title(@noko_doc)).to eq('ABE SAPIEN')
       end
+
+      #it 'titles of trades' do
+      #  title_divs = ['<div class="StockCodeDescription">ART OF DOOM HC</div>',
+      #                '<div class="StockCodeDescription">NEW LONE WOLF AND CUB TP VOL 09 (MR)</div>',
+      #                '<div class="StockCodeDescription">KUROSAGI CORPSE DELIVERY SERVICE OMNIBUS ED TP BOOK 04</div>',
+      #                '<div class="StockCodeDescription">SUPERMAN WONDER WOMAN TP VOL 03 CASUALTIES OF WAR</div>']
+      #  title_divs.each do |doc|
+      #  end
+      #end
 
       it 'issue_number' do
         expect(parser.parse_issue_number(@noko_doc)).to eq('34')
@@ -147,11 +156,11 @@ RSpec.describe DiamondComicsParser do
       end
 
       it 'when unexpected symbols in creator names' do
-        div = '<div class="StockCodeCreators">(W) Peter J. Tomasi (A) Doug Mahnke & Various (CA) Doug Mahnke</div>'
+        div = '<div class="StockCodeCreators">(W) Peter J. Tomasi (A) Doug Mahnke & Various (CA) Doug Mahnke, Mœbius</div>'
         @noko_doc = Nokogiri::HTML(div)
         expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Peter J. Tomasi'], 
                                                          artists: ['Doug Mahnke & Various'], 
-                                                         cover_artists: ['Doug Mahnke'] })
+                                                         cover_artists: ['Doug Mahnke', 'Mœbius'] })
       end
 
       it 'when there is no writer' do
@@ -161,6 +170,15 @@ RSpec.describe DiamondComicsParser do
                                                          artists: ['J. Scott Campbell'], 
                                                          cover_artists: ['J. Scott Campbell'] })
       end
+
+      it 'only writer' do
+        div = '<div class="StockCodeCreators">(W) Grant Morrison</div>'
+        @noko_doc = Nokogiri::HTML(div)
+        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Grant Morrison'], 
+                                                         artists: [], 
+                                                         cover_artists: [] })
+      end
+
     end
 
     it 'preview' do
