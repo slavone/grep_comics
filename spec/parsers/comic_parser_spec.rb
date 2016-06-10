@@ -1,8 +1,4 @@
-require "spec_helper"
-require 'diamond_comics_parser'
-require 'open-uri'
-require 'net/http'
-require 'nokogiri'
+require "rails_helper"
 
 RSpec.describe DiamondComicsParser do
   let(:parser) { DiamondComicsParser.new }

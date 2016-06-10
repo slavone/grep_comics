@@ -134,7 +134,7 @@ class DiamondComicsParser
 
   def parse_publisher(noko_nodes)
     publ_node = noko_nodes.css SELECTORS[:publisher]
-    matched = publ_node.inner_text.match /publisher:\W+(?<publisher>(\w|\s)+)/i
+    matched = publ_node.inner_text.match /publisher:[\W\s]+(?<publisher>[\w\s\W]+)/i
     return matched[:publisher] if matched
     ''
   end
