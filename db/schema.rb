@@ -11,9 +11,46 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 0) do
+ActiveRecord::Schema.define(version: 20160610095244) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "comics", force: :cascade do |t|
+    t.string   "diamond_code"
+    t.string   "title"
+    t.integer  "issue_number"
+    t.text     "preview"
+    t.decimal  "suggested_price"
+    t.string   "item_type"
+    t.date     "shipping_date"
+    t.integer  "publisher_id"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.index ["publisher_id"], name: "index_comics_on_publisher_id", using: :btree
+  end
+
+  create_table "creators", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_creators_on_name", using: :btree
+  end
+
+  create_table "publishers", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "writer_credits", force: :cascade do |t|
+    t.integer  "creator_id"
+    t.integer  "comic_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["comic_id"], name: "index_writer_credits_on_comic_id", using: :btree
+    t.index ["creator_id"], name: "index_writer_credits_on_creator_id", using: :btree
+  end
+
+  add_foreign_key "comics", "publishers"
 end
