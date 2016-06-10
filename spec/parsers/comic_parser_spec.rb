@@ -15,22 +15,40 @@ RSpec.describe DiamondComicsParser do
       expect(parser.parse_wednesday_date(previews_page)).to eq(Date.new 2016, 6, 8)
     end
 
-    it "diamond codes" do
-      expect(parser.parse_diamond_codes(previews_page)).to include('APR160066', 'FEB160013', 'MAR160268')
+    context 'only comics codes' do
+      it "diamond codes" do
+        expect(parser.parse_diamond_codes(previews_page, :comics)).to include('APR160066', 'FEB160013', 'MAR160268')
+      end
+
+      it "only premier publishers and comics & graphic novels sections" do
+        expect(parser.parse_diamond_codes(previews_page, :comics)).not_to include('FEB162183', 'FEB162822')
+      end
+
+      it 'doesnt include codes for things that arent comics' do
+        expect(parser.parse_diamond_codes(previews_page, :comics)).not_to include('JUN150355', 'DEC150623', 'FEB160722')
+      end
     end
 
-    it "only premier publishers and comics & graphic novels sections" do
-      expect(parser.parse_diamond_codes(previews_page)).not_to include('FEB162183', 'FEB162822')
+    context 'all codes' do
+      it 'codes from all sections' do
+        expect(parser.parse_diamond_codes(previews_page)).to include('APR160419', 'JUN150355', 'FEB162944')
+      end
     end
 
-    it 'doesnt include codes for things that arent comics' do
-      expect(parser.parse_diamond_codes(previews_page)).not_to include('JUN150355', 'DEC150623', 'FEB160722')
+    context 'only merch' do
+      it 'includes merch codes' do
+        expect(parser.parse_diamond_codes(previews_page, :merchandise)).to include('JUN150355', 'FEB162944')
+      end
+
+      it 'doesnt include comics codes' do
+        expect(parser.parse_diamond_codes(previews_page, :merchandise)).not_to include('APR160066', 'APR160979', 'FEB161065')
+      end
     end
   end
 
   context 'parses comic info' do
     before do
-      @noko_doc = Nokogiri::HTML(comic_page).css('.StockCode')
+      @noko_doc = Nokogiri::HTML(comic_page)
     end
 
     context 'description block' do

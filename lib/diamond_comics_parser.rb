@@ -14,18 +14,32 @@ class DiamondComicsParser
     ''
   end
 
-  def parse_diamond_codes(page)
+  def parse_diamond_codes(page, parse_for = :all)
     diamond_ids = []
-    #this is the last block of comics
-    stop_after = "COMICS & GRAPHIC NOVELS" + "\r\n"
-    break_flag = false
-    
-    page.each_line do |line|
-      break if break_flag && line.match(/^[A-Z ]+\r\n/)
-      break_flag = true if line == stop_after
-      if identify_item_type(line) != 'merchandise'
+    case parse_for
+    when :all
+      page.each_line do |line|
         matched = line.match /(?<code>[A-Z]{3}\d+)\s.+/
         diamond_ids << matched[:code] if matched
+      end
+    when :comics
+      break_flag = false
+      stop_after = "COMICS & GRAPHIC NOVELS" + "\r\n"
+      
+      page.each_line do |line|
+        break if break_flag && line.match(/^[A-Z ]+\r\n/)
+        break_flag = true if line == stop_after
+        if identify_item_type(line) != 'merchandise'
+          matched = line.match /(?<code>[A-Z]{3}\d+)\s.+/
+          diamond_ids << matched[:code] if matched
+        end
+      end
+    when :merchandise
+      page.each_line do |line|
+        if identify_item_type(line) == 'merchandise'
+          matched = line.match /(?<code>[A-Z]{3}\d+)\s.+/
+          diamond_ids << matched[:code] if matched
+        end
       end
     end
     diamond_ids
@@ -40,7 +54,7 @@ class DiamondComicsParser
   end
 
   def parse_comic_info(page)
-    doc = Nokogiri::HTML(page).css('.StockCode')
+    doc = Nokogiri::HTML(page)
     {
       diamond_id: parse_diamond_id(doc),
       title: parse_title(doc),
@@ -52,32 +66,6 @@ class DiamondComicsParser
       type: parse_item_type(doc),
       shipping_date: parse_shipping_date(doc)
     }
-  end
-
-  def pretty_print(comic)
-    puts '----------------------'
-    puts comic[:diamond_id]
-    puts comic[:title]
-    puts comic[:issue_number]
-    puts comic[:publisher]
-    puts 'Creators:'
-    comic[:creators].each do |key, value|
-      puts "#{key}: #{value.inspect}"
-    end
-    puts comic[:preview]
-    puts comic[:type]
-    puts comic[:suggested_price]
-  end
-
-  def test_process(ids = nil)
-    list_page = get_page CURRENT_WEEK
-    diamond_ids = parse_diamond_codes(list_page)
-    ids = diamond_ids.size unless ids
-    diamond_ids.first(ids).each do |code|
-      comic_page = get_comic_page code
-      comic = parse_comic_info comic_page
-      pretty_print comic
-    end
   end
 
   SELECTORS = { description: '.StockCodeDescription',
