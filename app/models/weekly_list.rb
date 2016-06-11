@@ -10,4 +10,8 @@
 #
 
 class WeeklyList < ApplicationRecord
+
+  def fetch_comics
+    Comic.where shipping_date: self.wednesday_date
+  end
 end

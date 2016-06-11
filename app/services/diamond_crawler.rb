@@ -5,6 +5,7 @@ class DiamondCrawler
   end
 
   def test_process(count = nil, go_anyway = false)
+    #TODO proper logging
     new_releases = current_week_releases
     date = wednesday_date new_releases
     if wl = check_for_weekly_list_in_db(date)

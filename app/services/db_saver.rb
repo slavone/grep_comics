@@ -2,6 +2,7 @@ class DBSaver
   def persist_to_db(comic_hash)
     unless Comic.find_by diamond_code: comic_hash[:diamond_id]
       #TODO more strict search, single issues with variant covers
+      #diamond_code && title != cur_title && issue_number != issue_number
       comic_params = map_params_to_model(comic_hash)
       publisher = build_publisher comic_hash
       creators = build_creators comic_hash[:creators]
@@ -13,6 +14,7 @@ class DBSaver
   private
 
   def build_creators(creators_hash)
+    #TODO variant_covers
     creators = {}
 
     creators_hash.each do |creator_type, arr_of_creators|

@@ -83,6 +83,8 @@ class DiamondComicsParser
     desc = desc_node.inner_text
   end
 
+  #TODO parse for variant covers CVR, books, volumes, ratings
+
   ITEM_TYPES = {
     'HC' => 'hardcover',
     'SC' => 'softcover',
@@ -111,7 +113,7 @@ class DiamondComicsParser
     #when 'hardcover', 'softcover', 'trade_paperback'
     #when 'graphic_novel'
     when 'single_issue'
-      matched = desc.match /(?<title>(\w|\s)+)#(?<number>\d+)/i
+      matched = desc.match /(?<title>[\w\s.,-$&]+)#(?<number>\d+)/i
       return matched[:title].strip if matched
     else
       return desc
