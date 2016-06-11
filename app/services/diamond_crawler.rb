@@ -4,32 +4,56 @@ class DiamondCrawler
     @db_saver = DBSaver.new
   end
 
-  #get current week list
-  #check with the stored list
-  #if different => check date
-  #if different date => create new week list object
-  #log shit
-
-  def test_process(count = nil)
-    diamond_ids = look_through_new_releases
+  def test_process(count = nil, go_anyway = false)
+    new_releases = current_week_releases
+    date = wednesday_date new_releases
+    if wl = check_for_weekly_list_in_db(date)
+      if !go_anyway && wl.list == new_releases
+        puts '--------------'
+        puts 'Nothing changed, process finished'
+        puts '--------------'
+        return
+      else
+        puts '--------------'
+        puts 'Updated current weekly_list'
+        puts '--------------'
+        wl.update_column :list, new_releases
+      end
+    else
+      WeeklyList.create list: new_releases, wednesday_date: date
+    end
+    diamond_ids = comics_diamond_ids new_releases 
     count ||= diamond_ids.size
-    traverse_ids(diamond_ids.first(count))
+    puts '--------------'
+    puts 'Started crawling'
+    collect_info_for diamond_ids.first(count)
+    puts 'Finished crawling'
+    puts '--------------'
   end
 
   private
 
-  def look_through_new_releases
-    new_releases = @parser.get_page DiamondComicsParser::CURRENT_WEEK
-    wednesday = @parser.parse_wednesday_date(new_releases)
-    diamond_ids = @parser.parse_diamond_codes(new_releases, :comics)
+  def current_week_releases
+    @parser.get_page DiamondComicsParser::CURRENT_WEEK
   end
 
-  def traverse_ids(diamond_ids)
+  def check_for_weekly_list_in_db(date)
+    WeeklyList.find_by wednesday_date: date
+  end
+
+  def wednesday_date(page)
+    @parser.parse_wednesday_date(page)
+  end
+
+  def comics_diamond_ids(page)
+    @parser.parse_diamond_codes(page, :comics)
+  end
+
+  def collect_info_for(diamond_ids)
     diamond_ids.each do |diamond_id|
       comic_page = @parser.get_comic_page diamond_id
       comic = @parser.parse_comic_info comic_page
       @db_saver.persist_to_db comic
     end
   end
-
 end
