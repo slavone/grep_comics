@@ -15,22 +15,23 @@ RSpec.describe DBSaver do
       shipping_date: Date.new(2016, 6, 8)
     }
   end
-
+  
   context 'persists to database' do
     it 'publisher' do
-      expect { db_saver.persist_to_db valid_comic_hash }.to change { Publisher.count }
+      expect { db_saver.persist_to_db valid_comic_hash }.to change { Publisher.count }.by(1)
+      expect(Publisher.find_by(name: 'DARK HORSE COMICS').name).to eq('DARK HORSE COMICS')
     end
 
-    it 'writers' do
-      expect { db_saver.persist_to_db valid_comic_hash }.to change { Creator.count }
+    it 'creators' do
+      expect { db_saver.persist_to_db valid_comic_hash }.to change { Creator.count }.by(3)
+      comic = Comic.find_by diamond_code: 'APR160066' 
+      expect(comic.writers.map &:name).to eq(['Mike Mignola', 'Scott Allie'])
+      expect(comic.artists.map &:name).to eq(['Sebastian Fiumara'])
+      expect(comic.cover_artists.map &:name).to eq(['Sebastian Fiumara'])
     end
 
     it 'comic' do
-      expect { db_saver.persist_to_db valid_comic_hash }.to change { Comic.count }
-    end
-
-    it 'with all valid associations' do
-      db_saver.persist_to_db valid_comic_hash
+      expect { db_saver.persist_to_db valid_comic_hash }.to change { Comic.count }.by(1)
       comic = Comic.find_by diamond_code: 'APR160066' 
       expect(comic.diamond_code).to eq 'APR160066'
       expect(comic.title).to eq 'ABE SAPIEN'
@@ -40,7 +41,6 @@ RSpec.describe DBSaver do
       expect(comic.suggested_price).to eq BigDecimal.new("3.99")
       expect(comic.shipping_date).to eq Date.new(2016, 6, 8)
       expect(comic.publisher.name).to eq 'DARK HORSE COMICS'
-      expect(comic.writers.map &:name).to eq(['Mike Mignola', 'Scott Allie'])
     end
   end
 end

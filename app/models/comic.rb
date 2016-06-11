@@ -25,4 +25,6 @@ class Comic < ApplicationRecord
   has_many :writers, through: :writer_credits, source: :creator
   has_many :artist_credits
   has_many :artists, through: :artist_credits, source: :creator
+  has_many :cover_artist_credits
+  has_many :cover_artists, through: :cover_artist_credits, source: :creator
 end

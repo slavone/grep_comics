@@ -4,29 +4,34 @@ class DBSaver
       #TODO more strict search, single issues with variant covers
       comic_params = map_params_to_model(comic_hash)
       publisher = build_publisher comic_hash
-      writers = build_writers comic_hash[:creators][:writers]
-      comic_params.merge! publisher: publisher, writers: writers
+      creators = build_creators comic_hash[:creators]
+      comic_params.merge!(publisher: publisher).merge! creators
       Comic.create comic_params
     end
   end
 
   private
 
-  def build_writers(writers)
-    writers.map do |writer_name|
-      if writer = Creator.find_by(name: writer_name)
-        writer
-      else
-        Creator.new name: writer_name
+  def build_creators(creators_hash)
+    creators = {}
+
+    creators_hash.each do |creator_type, arr_of_creators|
+      creators[creator_type] = arr_of_creators.map do |creator_name|
+        if creator = Creator.find_by(name: creator_name)
+          creator
+        else
+          Creator.create name: creator_name
+        end
       end
     end
+    creators
   end
 
   def build_publisher(comic_hash)
     if publisher = Publisher.find_by(name: comic_hash[:publisher])
       publisher
     else
-      Publisher.new name: comic_hash[:publisher]
+      Publisher.create name: comic_hash[:publisher]
     end
   end
 

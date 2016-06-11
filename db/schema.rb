@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160611111551) do
+ActiveRecord::Schema.define(version: 20160611115320) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,6 +39,15 @@ ActiveRecord::Schema.define(version: 20160611111551) do
     t.index ["publisher_id"], name: "index_comics_on_publisher_id", using: :btree
   end
 
+  create_table "cover_artist_credits", force: :cascade do |t|
+    t.integer  "creator_id"
+    t.integer  "comic_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["comic_id"], name: "index_cover_artist_credits_on_comic_id", using: :btree
+    t.index ["creator_id"], name: "index_cover_artist_credits_on_creator_id", using: :btree
+  end
+
   create_table "creators", force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at", null: false
@@ -64,4 +73,6 @@ ActiveRecord::Schema.define(version: 20160611111551) do
   add_foreign_key "artist_credits", "comics"
   add_foreign_key "artist_credits", "creators"
   add_foreign_key "comics", "publishers"
+  add_foreign_key "cover_artist_credits", "comics"
+  add_foreign_key "cover_artist_credits", "creators"
 end

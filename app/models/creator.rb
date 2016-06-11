@@ -13,4 +13,6 @@ class Creator < ApplicationRecord
   has_many :comics_as_writer, through: :writer_credits, source: :comic
   has_many :artist_credits
   has_many :comics_as_artist, through: :artist_credits, source: :comic
+  has_many :cover_artist_credits
+  has_many :comics_as_cover_artist, through: :cover_artist_credits, source: :comic
 end
