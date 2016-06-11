@@ -17,15 +17,15 @@ RSpec.describe DBSaver do
   end
 
   context 'persists to database' do
-    it 'created publisher' do
+    it 'publisher' do
       expect { db_saver.persist_to_db valid_comic_hash }.to change { Publisher.count }
     end
 
-    it 'created writers' do
+    it 'writers' do
       expect { db_saver.persist_to_db valid_comic_hash }.to change { Creator.count }
     end
 
-    it 'created comic' do
+    it 'comic' do
       expect { db_saver.persist_to_db valid_comic_hash }.to change { Comic.count }
     end
 

@@ -11,10 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160610095244) do
+ActiveRecord::Schema.define(version: 20160611111551) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "artist_credits", force: :cascade do |t|
+    t.integer  "creator_id"
+    t.integer  "comic_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["comic_id"], name: "index_artist_credits_on_comic_id", using: :btree
+    t.index ["creator_id"], name: "index_artist_credits_on_creator_id", using: :btree
+  end
 
   create_table "comics", force: :cascade do |t|
     t.string   "diamond_code"
@@ -52,5 +61,7 @@ ActiveRecord::Schema.define(version: 20160610095244) do
     t.index ["creator_id"], name: "index_writer_credits_on_creator_id", using: :btree
   end
 
+  add_foreign_key "artist_credits", "comics"
+  add_foreign_key "artist_credits", "creators"
   add_foreign_key "comics", "publishers"
 end

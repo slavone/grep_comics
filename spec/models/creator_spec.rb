@@ -9,4 +9,9 @@ RSpec.describe Creator, :type => :model do
     Fabricate(:comic, writers: [creator], title: 'SUPERMAN')
     expect(creator.comics_as_writer.map &:title).to include('SUPERMAN')
   end
+
+  it 'has comics as artist' do
+    Fabricate(:comic, artists: [creator], title: 'SUPERMAN')
+    expect(creator.comics_as_artist.map &:title).to include('SUPERMAN')
+  end
 end
