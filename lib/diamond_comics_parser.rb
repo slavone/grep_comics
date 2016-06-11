@@ -113,7 +113,7 @@ class DiamondComicsParser
     #when 'hardcover', 'softcover', 'trade_paperback'
     #when 'graphic_novel'
     when 'single_issue'
-      matched = desc.match /(?<title>[\w\s.,\-&$]+)#(?<number>\d+)/i
+      matched = desc.match /(?<title>[\-\w\s.,&$]+)#(?<number>\d+)/i
       return matched[:title].strip if matched
     else
       return desc
@@ -151,7 +151,7 @@ class DiamondComicsParser
 
   def parse_creators_string(creators)
     #should probably gsub out & Various
-    creators.kind_of?(String) ? creators.split(',').map(&:strip) : creators
+    creators.kind_of?(String) ? creators.gsub(/(?:& Various|Various)/, '').split(',').map(&:strip) : creators
   end
 
   def parse_creators(noko_nodes)
@@ -159,8 +159,8 @@ class DiamondComicsParser
     creators_text = creators_node.inner_text
     writers, artists, cover_artists = '', '', ''
 
-    creators_text.scan(/\((?:W|A|CA|W\/A|W\/A\/CA|A\/CA|W\/CA)\)[\s\W]+[\p{L}.,&\s]+/).each do |creators_block|
-      creators = creators_block.match /\(.+\)[\W\s]+(?<list>[\p{L}.,&\s]+)/
+    creators_text.scan(/\((?:W|A|CA|W\/A|W\/A\/CA|A\/CA|W\/CA)\)[\s\W]+[\p{L}.,&\s\-]+/).each do |creators_block|
+      creators = creators_block.match /\(.+\)[\W\s]+(?<list>[\p{L}.,&\s\-]+)/
       writers << creators[:list].strip if creators_block.match /(?<=\(|\/)W(?=\)|\/)/
       artists << creators[:list].strip if creators_block.match /(?<=\(|\/)A(?=\)|\/)/
       cover_artists << creators[:list].strip if creators_block.match /(?<=\(|\/)CA(?=\)|\/)/

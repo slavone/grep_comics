@@ -173,7 +173,7 @@ RSpec.describe DiamondComicsParser do
         div = '<div class="StockCodeCreators">(W) Peter J. Tomasi (A) Doug Mahnke & Various (CA) Doug Mahnke, Mœbius</div>'
         @noko_doc = Nokogiri::HTML(div)
         expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Peter J. Tomasi'], 
-                                                         artists: ['Doug Mahnke & Various'], 
+                                                         artists: ['Doug Mahnke'], 
                                                          cover_artists: ['Doug Mahnke', 'Mœbius'] })
       end
 
