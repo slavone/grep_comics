@@ -79,7 +79,8 @@ class DBSaver
   def query_single_issue(title, issue_number, year)
     Comic.where(title: title, 
                 issue_number: issue_number)
-         .where('extract(year from shipping_date) = ?', year).first
+         .where('extract(year from shipping_date) = ?', year)
+         .includes(:cover_artists).first
   end
 
   def fetch_or_persist_creator(name)
