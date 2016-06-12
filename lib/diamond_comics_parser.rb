@@ -64,7 +64,8 @@ class DiamondComicsParser
       preview: parse_preview(doc),
       suggested_price: parse_suggested_price(doc),
       type: parse_item_type(doc),
-      shipping_date: parse_shipping_date(doc)
+      shipping_date: parse_shipping_date(doc),
+      additional_info: parse_additional_info(doc)
     }
   end
 
@@ -83,8 +84,6 @@ class DiamondComicsParser
     desc = desc_node.inner_text
   end
 
-  #TODO parse for variant covers CVR, books, volumes, ratings
-
   ITEM_TYPES = {
     'HC' => 'hardcover',
     'SC' => 'softcover',
@@ -99,6 +98,24 @@ class DiamondComicsParser
     matched = description.match /(?<type>#)/ unless matched
     return ITEM_TYPES[matched[:type]] if matched
     'merchandise'
+  end
+
+  def build_additional_info(description)
+    add_info = {}
+    add_info[:variant_cover] = true if description.match /\b(?:CVR)\b/
+    if match = description.match(/(?<volume>BOOK|VOL)\s(?<number>\d{1,2})/)
+      add_info[match[:volume].downcase.to_sym] = match[:number] 
+    end
+    if match = description.match(/(?<number>\d+)[A-Z]{2}\sPTG/)
+      add_info[:reprint_number] = match[:number] 
+    end
+    add_info[:mature_rating] = true if description.match(/\(MR\)/)
+    add_info
+  end
+
+  def parse_additional_info(noko_nodes)
+    desc = get_description(noko_nodes)
+    build_additional_info desc
   end
   
   def parse_item_type(noko_nodes)

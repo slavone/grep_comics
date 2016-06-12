@@ -65,6 +65,16 @@ RSpec.describe DiamondComicsParser do
         expect(parser.parse_issue_number(@noko_doc)).to eq('34')
       end
 
+      it 'additional info' do
+        desc = 'SUPERMAN TP VOL 03 CASUALTIES OF WAR CVR A 2ND PTG (MR)'
+        expect(parser.build_additional_info(desc)).to eq({ variant_cover: true,
+                                                               vol: '03',
+                                                               reprint_number: '2',
+                                                               mature_rating: true
+                                                               
+        })
+      end
+
       context 'identifies types' do
         it 'hardcover' do
           descriptions = ['ART OF MIRRORS EDGE CATALYST HC', 
@@ -223,7 +233,8 @@ RSpec.describe DiamondComicsParser do
                                                         suggested_price: '$3.99',
                                                         type: 'single_issue',
                                                         diamond_id: 'APR160066',
-                                                        shipping_date: Date.new(2016, 6, 8)
+                                                        shipping_date: Date.new(2016, 6, 8),
+                                                        additional_info: {}
     })
   end
 end
