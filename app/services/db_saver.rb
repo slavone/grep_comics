@@ -40,14 +40,24 @@ class DBSaver
 
     if comic_already_exists
       log 'This comic already exists in the database'
-      if comic_hash[:additional_info][:variant_cover]
-        log 'But its tagged as variant, so it may have unassociated cover artist'
-        associate_variant_cover_artists comic_already_exists, 
-                                        comic_hash[:creators][:cover_artists]
-      else
-        log 'Quitting'
-        return
+      comic_hash[:creators].each do |creator_type, creator_arr|
+        log "Checking for not associated #{creator_type}"
+        associated_creators = comic_already_exists.send(creator_type)
+        creator_arr.each do |creator|
+          unless associated_creators.map(&:name).include?(creator)
+            log "Creator #{creator} wasnt associated before as #{creator_type}, adding..."
+            associated_creators << fetch_or_persist_creator(creator)
+          end
+        end
       end
+      #if comic_hash[:additional_info][:variant_cover]
+      #  log 'But its tagged as variant, so it may have unassociated cover artist'
+      #  associate_variant_cover_artists comic_already_exists, 
+      #                                  comic_hash[:creators][:cover_artists]
+      #else
+      #  log 'Quitting'
+      #  return
+      #end
     else
       save_new_comic(comic_hash)
       log "Persisted comic #{comic_hash[:title]} #{comic_hash[:issue_number]}"
@@ -80,7 +90,7 @@ class DBSaver
     Comic.where(title: title, 
                 issue_number: issue_number)
          .where('extract(year from shipping_date) = ?', year)
-         .includes(:cover_artists).first
+         .includes(:writers, :artists, :cover_artists).first
   end
 
   def fetch_or_persist_creator(name)
