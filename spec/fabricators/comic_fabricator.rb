@@ -8,4 +8,6 @@ Fabricator(:comic) do
   shipping_date Date.new(2016, 6, 8)
   publisher { Fabricate(:publisher, name: 'DC COMICS') }
   writers { [Fabricate(:creator)] }
+  artists { [Fabricate(:creator)] }
+  cover_artists { [Fabricate(:creator)] }
 end

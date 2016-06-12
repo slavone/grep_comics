@@ -28,6 +28,8 @@ class DiamondCrawler
     log 'Starting crawling process'
     scrape_data diamond_ids.first(count)
     log 'Finished crawling process'
+  rescue => e
+    log "Something went wrong :( . Error message: #{e.message}"
   end
 
   private
