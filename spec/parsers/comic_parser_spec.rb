@@ -141,7 +141,7 @@ RSpec.describe DiamondComicsParser do
 
 
     it 'cover image' do
-      expect(parser.parse_cover_image(@noko_doc)).to eq('/catalogimages/STK_IMAGES/STL000001-020000/STL006317.jpg')
+      expect(parser.parse_cover_image(@noko_doc)).to eq('http://www.previewsworld.com/catalogimages/STK_IMAGES/STL000001-020000/STL006317.jpg')
     end
 
     it 'publisher name' do
@@ -235,7 +235,8 @@ RSpec.describe DiamondComicsParser do
                                                         type: 'single_issue',
                                                         diamond_id: 'APR160066',
                                                         shipping_date: Date.new(2016, 6, 8),
-                                                        additional_info: {}
+                                                        additional_info: {},
+                                                        cover_image_url: 'http://www.previewsworld.com/catalogimages/STK_IMAGES/STL000001-020000/STL006317.jpg'
     })
   end
 end

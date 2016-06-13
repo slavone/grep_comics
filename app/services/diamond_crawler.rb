@@ -5,10 +5,14 @@ class DiamondCrawler
     @logger = Logger.new "#{Rails.root}/log/diamond_crawler.log"
   end
 
-  def test_process(count = nil, go_anyway = false)
+  def test_process(count = nil, go_anyway = false, not_current_week_list = nil)
     log '---------------------------------'
     log 'DiamondCrawler started'
-    new_releases = current_week_releases
+    new_releases = if not_current_week_list
+                     @parser.get_page not_current_week_list
+                   else
+                     current_week_releases
+                   end
     date = wednesday_date new_releases
     log "Listed date is #{date}"
     if wl = check_for_weekly_list_in_db(date)
@@ -34,8 +38,8 @@ class DiamondCrawler
 
   private
 
-  def log(message)
-    @logger.info message
+  def log(message, msg_type = :info)
+    @logger.send(msg_type, message) unless Rails.env == 'test'
   end
 
   def pretty_comic_log_message(comic)

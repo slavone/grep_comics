@@ -17,8 +17,8 @@ class DBSaver
 
   private
 
-  def log(message)
-    @logger.info message
+  def log(message, msg_type = :info)
+    @logger.send(msg_type, message) unless Rails.env == 'test'
   end
 
   def persist_collected_edition(comic_hash)
@@ -129,7 +129,8 @@ class DBSaver
       preview: comic_hash[:preview],
       suggested_price: BigDecimal.new(comic_hash[:suggested_price].gsub /\$/, ''), 
       item_type: comic_hash[:type],
-      shipping_date: comic_hash[:shipping_date]
+      shipping_date: comic_hash[:shipping_date],
+      cover_image: comic_hash[:cover_image_url]
     }
   end
 end

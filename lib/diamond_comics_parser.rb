@@ -1,7 +1,8 @@
 class DiamondComicsParser
-  CURRENT_WEEK = 'http://www.previewsworld.com/shipping/newreleases.txt'
-  NEXT_WEEK = 'http://www.previewsworld.com/shipping/upcomingreleases.txt'
-  CATALOG = 'http://www.previewsworld.com/Catalog/'
+  CURRENT_WEEK = 'http://www.previewsworld.com/shipping/newreleases.txt'.freeze
+  NEXT_WEEK = 'http://www.previewsworld.com/shipping/upcomingreleases.txt'.freeze
+  CATALOG = 'http://www.previewsworld.com/Catalog/'.freeze
+  ROOT_URL = 'http://www.previewsworld.com'.freeze
 
   def get_page(page_url)
     url = URI.parse page_url
@@ -65,7 +66,8 @@ class DiamondComicsParser
       suggested_price: parse_suggested_price(doc),
       type: parse_item_type(doc),
       shipping_date: parse_shipping_date(doc),
-      additional_info: parse_additional_info(doc)
+      additional_info: parse_additional_info(doc),
+      cover_image_url: parse_cover_image(doc)
     }
   end
 
@@ -148,7 +150,7 @@ class DiamondComicsParser
 
   def parse_cover_image(noko_nodes)
     img_node = noko_nodes.css SELECTORS[:cover_image]
-    return img_node.attr('href').value unless img_node.empty?
+    return ROOT_URL + img_node.attr('href').value unless img_node.empty?
     ''
   end
 
@@ -161,15 +163,22 @@ class DiamondComicsParser
 
   def build_creators_hash(writers = [], artists = [], cover_artists = [])
     {
-      writers: parse_creators_string(writers), 
-      artists: parse_creators_string(artists), 
-      cover_artists: parse_creators_string(cover_artists)
+      writers: filter_creators_string(writers), 
+      artists: filter_creators_string(artists), 
+      cover_artists: filter_creators_string(cover_artists)
     }
   end
 
-  def parse_creators_string(creators)
+  def filter_creators_string(creators)
     #should probably gsub out & Various
-    creators.kind_of?(String) ? creators.gsub(/(?:& Various|Various)/, '').split(',').map(&:strip) : creators
+    if creators.kind_of?(String)
+      creators.gsub(/(?:& Various|Various)/, '')
+              .split(',')
+              .map(&:strip)
+              .reject(&:empty?)
+    else
+      creators
+    end
   end
 
   def parse_creators(noko_nodes)
