@@ -133,7 +133,7 @@ class DiamondComicsParser
     #when 'hardcover', 'softcover', 'trade_paperback'
     #when 'graphic_novel'
     when 'single_issue'
-      matched = desc.match /(?<title>[\-\w\s.,&$]+)#(?<number>\d+)/i
+      matched = desc.match /(?<title>[\-\w\s.,&$`']+)#(?<number>\d+)/i
       return matched[:title].strip if matched
     else
       return desc
