@@ -94,6 +94,7 @@ class DiamondComicsParser
   }.freeze
 
   def identify_item_type(description)
+    return 'merchandise' if description.match /\bPOSTER\b/
     matched = description.match /\b(?<type>HC|SC|TP|GN|OGN)\b/
     matched = description.match /(?<type>#)/ unless matched
     return ITEM_TYPES[matched[:type]] if matched

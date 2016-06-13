@@ -123,7 +123,8 @@ RSpec.describe DiamondComicsParser do
         it 'merch and other stuff' do
           descriptions = ['HALO 5 GUARDIANS BEST OF AF', 
                           'BATMAN BLACK & WHITE STATUE DAVE MAZZUCCHELLI 2ND ED',
-                          'AOD NECRONOMICON PX ZIP HOODIE XXL']
+                          'AOD NECRONOMICON PX ZIP HOODIE XXL',
+                          'CIVIL WAR II #1 BY DJURDJEVIC POSTER']
           descriptions.each do |desc|
             expect(parser.identify_item_type(desc)).to eq 'merchandise'
           end
