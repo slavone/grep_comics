@@ -10,8 +10,14 @@
 #
 
 class WeeklyList < ApplicationRecord
+  class << self
+    def current_week_list
+      WeeklyList.order(wednesday_date: :desc).first
+    end
+  end
 
   def fetch_comics
     Comic.where shipping_date: self.wednesday_date
   end
+
 end
