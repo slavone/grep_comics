@@ -1,4 +1,21 @@
-h1 Test
-- @comics.each do |comic|
-  .well
-    = comic.inspect
+h1 = @comics.count
+table.table
+  thead
+    tr
+      th Title
+      th Issue number
+      th Publisher
+      th Writers
+      th Artists
+      th Cover artists
+  tbody
+    - @comics.each do |comic|
+      tr
+        th = comic.diamond_code
+        th = comic.title.downcase.titleize
+        th = comic.issue_number
+        th = comic.publisher&.name
+        th = comic.writers&.map(&:name).join(', ')
+        th = comic.artists&.map(&:name).join(', ')
+        th = comic.cover_artists&.map(&:name).join(', ')
+

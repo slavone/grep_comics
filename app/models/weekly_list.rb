@@ -17,7 +17,7 @@ class WeeklyList < ApplicationRecord
   end
 
   def fetch_comics
-    Comic.where shipping_date: self.wednesday_date
+    Comic.where(shipping_date: self.wednesday_date).includes(:publisher, :writers, :artists, :cover_artists).order('publishers.name', :title)
   end
 
 end
