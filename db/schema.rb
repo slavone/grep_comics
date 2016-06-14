@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160614123546) do
+ActiveRecord::Schema.define(version: 20160614193602) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,10 +34,12 @@ ActiveRecord::Schema.define(version: 20160614123546) do
     t.string   "item_type"
     t.date     "shipping_date"
     t.integer  "publisher_id"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
     t.string   "cover_image"
     t.integer  "weekly_list_id"
+    t.boolean  "is_variant"
+    t.integer  "reprint_number",  limit: 2
     t.index ["diamond_code"], name: "index_comics_on_diamond_code", using: :btree
     t.index ["publisher_id"], name: "index_comics_on_publisher_id", using: :btree
     t.index ["shipping_date"], name: "index_comics_on_shipping_date", using: :btree

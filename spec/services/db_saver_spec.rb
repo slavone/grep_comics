@@ -16,7 +16,8 @@ RSpec.describe DBSaver do
       type: 'single_issue',
       diamond_id: 'APR160066',
       shipping_date: Date.new(2016, 6, 8),
-      additional_info: {}
+      additional_info: { variant_cover: true,
+                         reprint_number: 2 }
     }
   end
   
@@ -45,6 +46,8 @@ RSpec.describe DBSaver do
       expect(comic.suggested_price).to eq BigDecimal.new("3.99")
       expect(comic.shipping_date).to eq Date.new(2016, 6, 8)
       expect(comic.publisher.name).to eq 'DARK HORSE COMICS'
+      expect(comic.is_variant).to eq true
+      expect(comic.reprint_number).to eq 2
     end
   end
 

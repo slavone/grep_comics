@@ -15,6 +15,8 @@
 #  updated_at      :datetime         not null
 #  cover_image     :string
 #  weekly_list_id  :integer
+#  is_variant      :boolean
+#  reprint_number  :integer
 #
 # Foreign Keys
 #
@@ -33,6 +35,9 @@ class Comic < ApplicationRecord
   has_many :cover_artists, through: :cover_artist_credits, source: :creator
 
   def humanized_title
-    "#{title} #{'#' + issue_number.to_s if item_type == 'single_issue' }".strip
+    (title + 
+     "#{' #' + issue_number.to_s if item_type == 'single_issue'}" + 
+     "#{' VARIANT' if is_variant}" +
+     "#{" #{reprint_number} PRINTING" if reprint_number && reprint_number > 1}").strip
   end
 end
