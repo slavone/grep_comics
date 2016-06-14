@@ -1,17 +1,16 @@
 class DBSaver
-  def initialize
+  def initialize(weekly_list)
+    @weekly_list = weekly_list
     @logger = Logger.new "#{Rails.root}/log/db_saver.log"
   end
 
   def persist_to_db(comic_hash)
     log '--------------------------------------------'
     log "Trying to persist comic #{comic_hash.inspect}"
-    if comic_hash[:type] == 'single_issue'
-      log 'Its a single issue'
-      persist_single_issue(comic_hash)
+    if Comic.find_by diamond_code: comic_hash[:diamond_id]
+      log "Comic with diamond_code #{comic_hash[:diamond_id]} already exists"
     else
-      log 'Its a collected edition'
-      persist_collected_edition(comic_hash)
+      save_new_comic comic_hash
     end
   end
 
@@ -21,76 +20,18 @@ class DBSaver
     @logger.send(msg_type, message) unless Rails.env == 'test'
   end
 
-  def persist_collected_edition(comic_hash)
-    comic_already_exists = Comic.find_by title: comic_hash[:title]
-
-    if comic_already_exists
-      log 'This comic already exists in the database. Quitting'
-      return
-    else
-      save_new_comic(comic_hash)
-      log "Persisted comic #{comic_hash[:title]}"
-    end
-  end
-
-  def persist_single_issue(comic_hash)
-    comic_already_exists = query_single_issue comic_hash[:title], 
-                                              comic_hash[:issue_number],
-                                              comic_hash[:shipping_date].try(:year)
-
-    if comic_already_exists
-      log 'This comic already exists in the database'
-      comic_hash[:creators].each do |creator_type, creator_arr|
-        log "Checking for not associated #{creator_type}"
-        associated_creators = comic_already_exists.send(creator_type)
-        creator_arr.each do |creator|
-          unless associated_creators.map(&:name).include?(creator)
-            log "Creator #{creator} wasnt associated before as #{creator_type}, adding..."
-            associated_creators << fetch_or_persist_creator(creator)
-          end
-        end
-      end
-      #if comic_hash[:additional_info][:variant_cover]
-      #  log 'But its tagged as variant, so it may have unassociated cover artist'
-      #  associate_variant_cover_artists comic_already_exists, 
-      #                                  comic_hash[:creators][:cover_artists]
-      #else
-      #  log 'Quitting'
-      #  return
-      #end
-    else
-      save_new_comic(comic_hash)
-      log "Persisted comic #{comic_hash[:title]} #{comic_hash[:issue_number]}"
-    end
-  end
-
-  def associate_variant_cover_artists(existing_comic, cover_artists)
-    associated_cover_artists = existing_comic.cover_artists
-    cover_artists.each do |cover_artist|
-      unless associated_cover_artists.map(&:name).include?(cover_artist)
-        log "Cover artist #{cover_artist} wasnt associated before, adding..."
-        associated_cover_artists << fetch_or_persist_creator(cover_artist)
-      end
-    end
-  end
-
   def save_new_comic(comic_hash)
     comic_params = map_params_to_model(comic_hash)
     publisher = build_publisher comic_hash
     creators = build_creators comic_hash[:creators]
-    comic_params.merge!(publisher: publisher).merge! creators
-    Comic.create comic_params
+    comic_params.merge!(publisher: publisher, weekly_list: @weekly_list).merge! creators
+    created_comic = Comic.create comic_params
+    log "Persisted comic #{comic_hash[:diamond_code]} #{comic_hash[:title]}"
+    created_comic
   end
 
   def cover_artists_already_associated(comic, cover_artists)
     comic.cover_artists.map(&:name).include? cover_artists
-  end
-
-  def query_single_issue(title, issue_number, year)
-    Comic.where(title: title, 
-                issue_number: issue_number)
-         .where('extract(year from shipping_date) = ?', year)
-         .includes(:writers, :artists, :cover_artists).first
   end
 
   def fetch_or_persist_creator(name)

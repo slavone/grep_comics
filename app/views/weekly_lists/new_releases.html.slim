@@ -4,6 +4,7 @@ table.table
     tr
       /th Cover
       th Diamond code
+      th Shipping date
       th Title
       th Issue number
       th Publisher
@@ -16,6 +17,7 @@ table.table
         /th
           img src=comic.cover_image height='469' width='306'
         th = comic.diamond_code
+        th = comic.shipping_date
         th = comic.humanized_title
         th = comic.issue_number
         th = comic.publisher&.name

@@ -1,7 +1,7 @@
 class DiamondCrawler
   def initialize
     @parser = DiamondComicsParser.new
-    @db_saver = DBSaver.new
+    @db_saver = nil
     @logger = Logger.new "#{Rails.root}/log/diamond_crawler.log"
   end
 
@@ -22,9 +22,11 @@ class DiamondCrawler
       else
         log "List was updated"
         wl.update_column :list, new_releases
+        initialize_db_saver(wl)
       end
     else
-      WeeklyList.create list: new_releases, wednesday_date: date
+      wl = WeeklyList.create list: new_releases, wednesday_date: date
+      initialize_db_saver(wl)
       log "Created new WeeklyList"
     end
     diamond_ids = comics_diamond_ids new_releases 
@@ -33,13 +35,17 @@ class DiamondCrawler
     scrape_data diamond_ids.first(count)
     log 'Finished crawling process'
   rescue => e
-    log "Something went wrong :( . Error message: #{e.message}"
+    log "Something went wrong :( . Error message: #{e.message}", :error
   end
 
   private
 
   def log(message, msg_type = :info)
     @logger.send(msg_type, message) unless Rails.env == 'test'
+  end
+
+  def initialize_db_saver(weekly_list)
+    @db_saver = DBSaver.new(weekly_list)
   end
 
   def pretty_comic_log_message(comic)
@@ -63,6 +69,7 @@ class DiamondCrawler
   end
 
   def scrape_data(diamond_ids)
+    log 'DBSaver wasnt initialized', :error unless @db_saver
     diamond_ids.each do |diamond_id|
       comic_page = @parser.get_comic_page diamond_id
       comic = @parser.parse_comic_info comic_page
