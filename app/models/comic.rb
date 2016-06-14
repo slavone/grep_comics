@@ -28,4 +28,8 @@ class Comic < ApplicationRecord
   has_many :artists, through: :artist_credits, source: :creator
   has_many :cover_artist_credits
   has_many :cover_artists, through: :cover_artist_credits, source: :creator
+
+  def humanized_title
+    "#{title} #{'#' + issue_number.to_s if item_type == 'single_issue' }".strip
+  end
 end

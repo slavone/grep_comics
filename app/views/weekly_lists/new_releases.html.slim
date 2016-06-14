@@ -2,6 +2,7 @@ h1 = @comics.size
 table.table
   thead
     tr
+      /th Cover
       th Diamond code
       th Title
       th Issue number
@@ -12,8 +13,10 @@ table.table
   tbody
     - @comics.each do |comic|
       tr
+        /th
+          img src=comic.cover_image height='469' width='306'
         th = comic.diamond_code
-        th = comic.title.downcase.titleize
+        th = comic.humanized_title
         th = comic.issue_number
         th = comic.publisher&.name
         th = comic.writers&.map(&:name).join(', ')
