@@ -14,14 +14,17 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  cover_image     :string
+#  weekly_list_id  :integer
 #
 # Foreign Keys
 #
 #  fk_rails_4c749ccbd2  (publisher_id => publishers.id)
+#  fk_rails_812b74135e  (weekly_list_id => weekly_lists.id)
 #
 
 class Comic < ApplicationRecord
   belongs_to :publisher
+  belongs_to :weekly_list, optional: true
   has_many :writer_credits
   has_many :writers, through: :writer_credits, source: :creator
   has_many :artist_credits

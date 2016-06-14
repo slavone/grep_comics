@@ -10,6 +10,8 @@
 #
 
 class WeeklyList < ApplicationRecord
+  has_many :comics
+
   class << self
     def current_week_list
       WeeklyList.order(wednesday_date: :desc).first
@@ -17,7 +19,7 @@ class WeeklyList < ApplicationRecord
   end
 
   def fetch_comics
-    Comic.eager_load(:publisher).preload(:writers, :artists, :cover_artists).where(shipping_date: self.wednesday_date).order('publishers.name', :title)
+    self.comics.eager_load(:publisher).preload(:writers, :artists, :cover_artists).order('publishers.name', :title, :issue_number)
   end
 
 end
