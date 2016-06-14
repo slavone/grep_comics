@@ -4,6 +4,7 @@ class DBSaver
     @logger = Logger.new "#{Rails.root}/log/db_saver.log"
   end
 
+  #TODO think about what to do with TBD. maybe add another column which flags them for retry later?
   def persist_to_db(comic_hash)
     log '--------------------------------------------'
     log "Trying to persist comic #{comic_hash.inspect}"
