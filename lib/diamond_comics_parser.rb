@@ -170,9 +170,9 @@ class DiamondComicsParser
   end
 
   def filter_creators_string(creators)
-    #should probably gsub out & Various
+    #should probably gsub out & Various and TBD
     if creators.kind_of?(String)
-      creators.gsub(/(?:& Various|Various)/, '')
+      creators.gsub(/(?:& Various|Various|TBD)/, '')
               .split(',')
               .map(&:strip)
               .reject(&:empty?)
