@@ -1,27 +1,32 @@
 .container-fluid
-  table.table.table-responsive#releases
-    thead
-      tr
-        /th Cover
-        th Diamond code
-        th Shipping date
-        th Title
-        th Issue number
-        th Publisher
-        th Writers
-        th Artists
-        th Cover artists
-    tbody
-      - @comics.each do |comic|
-        tr
-          /th
-            img src=comic.cover_image height='469' width='306'
-          th = comic.diamond_code
-          th = comic.shipping_date
-          th = comic.humanized_title
-          th = comic.issue_number
-          th = comic.publisher&.name
-          th = comic.writers&.map(&:name).join(', ')
-          th = comic.artists&.map(&:name).join(', ')
-          th = comic.cover_artists&.map(&:name).join(', ')
-
+  .row
+    .col-xs-2
+      - @creators.each do |creator|
+        p = creator.name
+    .col-xs-10
+      table.table-hover.table-bordered#releases
+        thead
+          tr
+            /th Cover
+            th Diamond code
+            th Shipping date
+            th Title
+            th Issue number
+            th Publisher
+            th Writers
+            th Artists
+            th Cover artists
+        tbody
+          - @comics.each do |comic|
+            tr
+              /th
+                img src=comic.cover_image height='469' width='306'
+              td = comic.diamond_code
+              td = comic.shipping_date
+              td#expand-preview data-preview= comic.preview
+                = comic.humanized_title
+              td = comic.issue_number
+              td = comic.publisher&.name
+              td = comic.writers&.map(&:name).join(', ')
+              td = comic.artists&.map(&:name).join(', ')
+              td = comic.cover_artists&.map(&:name).join(', ')
