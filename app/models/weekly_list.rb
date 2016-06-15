@@ -23,12 +23,25 @@ class WeeklyList < ApplicationRecord
   end
 
   def all_creators
-    unique_creators = Set.new
-    self.comics.preload(:writers, :artists, :cover_artists).each do |comic|
-      comic.writers.each { |writer| unique_creators << writer }
-      comic.artists.each { |artist| unique_creators << artist }
-      comic.cover_artists.each { |cover_artist| unique_creators << cover_artist }
-    end
-    unique_creators.sort_by { |e| e.name }
+    Creator.find_by_sql("WITH weekly_comics AS (
+                        SELECT id FROM comics WHERE weekly_list_id = #{self.id}
+                        )
+                        SELECT DISTINCT *
+                        FROM creators
+                        WHERE
+                        id IN (
+                          SELECT writer_credits.creator_id
+                          FROM writer_credits JOIN weekly_comics 
+                          ON writer_credits.comic_id = weekly_comics.id
+                          UNION ALL
+                          SELECT artist_credits.creator_id
+                          FROM artist_credits JOIN weekly_comics 
+                          ON artist_credits.comic_id = weekly_comics.id
+                          UNION ALL
+                          SELECT cover_artist_credits.creator_id
+                          FROM cover_artist_credits JOIN weekly_comics 
+                          ON cover_artist_credits.comic_id = weekly_comics.id
+                        )
+                        ORDER BY name")
   end
 end
