@@ -1,13 +1,14 @@
 .container-fluid
   .row
     .col-xs-2
-      - @creators.each do |creator|
-        p = creator.name
+      ul.nav.nav-sidebar
+        - @creators.each do |creator|
+          li.creator-filter = creator.name
     .col-xs-10
       table.table-hover.table-bordered#releases
         thead
           tr
-            /th Cover
+            th Cover
             th Diamond code
             th Shipping date
             th Title
@@ -18,13 +19,12 @@
             th Cover artists
         tbody
           - @comics.each do |comic|
-            tr
-              /th
-                img src=comic.cover_image height='469' width='306'
+            tr data-preview= comic.preview
+              td
+                img src=comic.cover_image height='330' width='215'
               td = comic.diamond_code
               td = comic.shipping_date
-              td#expand-preview data-preview= comic.preview
-                = comic.humanized_title
+              td = comic.humanized_title
               td = comic.issue_number
               td = comic.publisher&.name
               td = comic.writers&.map(&:name).join(', ')

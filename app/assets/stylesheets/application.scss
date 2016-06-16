@@ -14,3 +14,25 @@
 @import "bootstrap-sprockets";
 @import "bootstrap";
 @import "datatables.min";
+
+#releases thead tr, tbody tr {
+  th, td {
+    text-align: center;
+  }
+}
+
+.nav-sidebar {
+  height: 100%;
+  position: fixed;
+  overflow-y: scroll;
+  padding-bottom: 30px;
+
+  .filterOn {
+    background-color: #337ab7;
+  }
+
+  li:hover {
+    background-color: #74a9d8;
+  }
+
+}
