@@ -5,6 +5,10 @@ class DiamondCrawler
     @logger = Logger.new "#{Rails.root}/log/diamond_crawler.log"
   end
 
+  def test_cron
+    log 'Hey its cron'
+  end
+
   def test_process(count = nil, go_anyway = false, not_current_week_list = nil)
     log '---------------------------------'
     log 'DiamondCrawler started'
