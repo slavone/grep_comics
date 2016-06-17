@@ -6,13 +6,22 @@ $(document).on 'turbolinks:load', ->
     dom:"<'row'<'col-sm-6'l><'col-sm-6'<'#tableFilter'>>>" +
         "<'row'<'col-sm-12'tr>>" +
         "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+
+  dataTable.searchFilters = []
+  dataTable.addSearchFilter = (word) ->
+    this.searchFilters.push word
+  dataTable.removeSearchFilter = (word) ->
+    this.searchFilters = this.searchFilters.filter (elem)->
+      elem != word
+  dataTable.applySearchFilters = ->
+    this.search(this.searchFilters.join('|'), true, false, true).draw()
+
   searchField = $('#tableFilter').html "<input class='form-control' style='width: 100%' placeholder='Search'>"
   $(searchField).on 'search input paste cut', (e)->
     dataTable.search( e.target.value ).draw()
 
   $('#releases tbody').on 'click', 'tr', ->
-    jThis = $(this)
-    tr = jThis.closest('tr')
+    tr = $(this)
     row = dataTable.row(tr)
 
     if row.child.isShown()
@@ -22,18 +31,16 @@ $(document).on 'turbolinks:load', ->
       row.child(tr.data('preview')).show()
       tr.addClass('shown')
 
-  dataTable.customFilters = []
   $(document).on 'click', '.creator-filter', (e)->
     creatorName = e.target.innerText
     selector = $(e.target)
 
     if selector.hasClass 'filterOn'
-      dataTable.customFilters = dataTable.customFilters.filter (elem)->
-        elem != creatorName
+      dataTable.removeSearchFilter creatorName
       selector.removeClass 'filterOn'
     else
       selector.addClass 'filterOn'
-      dataTable.customFilters.push creatorName
-    dataTable.search(dataTable.customFilters.join('|'), true, false, true).draw()
+      dataTable.addSearchFilter creatorName
+    dataTable.applySearchFilters()
 
 
