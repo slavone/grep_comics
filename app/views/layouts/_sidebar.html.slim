@@ -1,0 +1,9 @@
+aside.main-sidebar
+  .slimScrollDiv
+    .sidebar
+      ul.nav.sidebar-menu
+        li.header Creators, featured this week
+        - @creators.each do |creator|
+          li
+            a.creator-filter
+              = creator.name

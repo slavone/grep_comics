@@ -6,5 +6,9 @@ html
     = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
 
-  body
-    = yield
+  body.fixed.skin-black.sidebar-collapse
+    .wrapper
+      = render 'layouts/header'
+      = render 'layouts/sidebar'
+      .content-wrapper
+        = yield

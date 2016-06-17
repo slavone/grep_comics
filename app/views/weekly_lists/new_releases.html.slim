@@ -1,11 +1,9 @@
-.container-fluid
-  .row
-    .col-xs-2
-      ul.nav.nav-sidebar
-        - @creators.each do |creator|
-          li.creator-filter = creator.name
-    .col-xs-10
-      table.table-hover.table-bordered#releases
+section.content
+  .box
+    .box-header
+      h3.box-title Browse new releases
+    .box-body
+      table.table.table-bordered.dataTable#releases
         thead
           tr
             th Cover
