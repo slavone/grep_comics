@@ -17,6 +17,7 @@ gem 'jbuilder', '~> 2.0'
 # gem 'bcrypt', '~> 3.1.7'
 gem 'slim-rails', '~> 3.1'
 gem 'bootstrap-sass', '~> 3.3.6'
+gem 'font-awesome-sass'
 
 gem 'whenever', require: false
 

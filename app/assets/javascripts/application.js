@@ -15,5 +15,7 @@
 //= require bootstrap-sprockets
 //= require turbolinks
 //= require datatables.min.js
+//= require admin_lte.js
+//= require jquery.slimscroll.min.js
 //= require new_releases
 //= require_tree .

@@ -14,6 +14,9 @@
 @import "bootstrap-sprockets";
 @import "bootstrap";
 @import "datatables.min";
+@import "adminlte-theme/main";
+@import "font-awesome-sprockets";
+@import "font-awesome";
 
 #releases thead tr, tbody tr {
   th, td {
@@ -21,18 +24,11 @@
   }
 }
 
-.nav-sidebar {
-  height: 100%;
-  position: fixed;
-  overflow-y: scroll;
-  padding-bottom: 30px;
 
-  .filterOn {
-    background-color: #337ab7;
-  }
+.filterOn {
+  background-color: #337ab7;
+}
 
-  li:hover {
-    background-color: #74a9d8;
-  }
-
+.sidebar-menu > li:hover > a.filterOn {
+  background-color: #337ab7;
 }
