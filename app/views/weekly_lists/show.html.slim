@@ -1,4 +1,4 @@
-section.content 
+section.content
   #weekday data-week=@weekly_list.wednesday_date
   .box
     .box-header
@@ -26,6 +26,15 @@ section.content
               td = comic.humanized_title
               td = comic.issue_number
               td = comic.publisher&.name
-              td = comic.writers&.map(&:name).join(', ')
-              td = comic.artists&.map(&:name).join(', ')
-              td = comic.cover_artists&.map(&:name).join(', ')
+              td.creators-list
+                - comic.writers&.each do |creator|
+                  a href=creator_path(creator)
+                    = creator.name
+              td.creators-list
+                - comic.artists&.each do |creator|
+                  a href=creator_path(creator)
+                    = creator.name
+              td.creators-list
+                - comic.cover_artists&.each do |creator|
+                  a href=creator_path(creator)
+                    = creator.name

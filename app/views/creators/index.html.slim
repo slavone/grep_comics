@@ -1,0 +1,10 @@
+section.content
+  .box
+    .box-header
+      h3.box-title All available creators
+    .box-body
+      ul
+        - @creators.each do |creator|
+          li
+            a href=creator_path(creator)
+             = creator.name

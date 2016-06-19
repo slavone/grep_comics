@@ -2,7 +2,7 @@ aside.main-sidebar
   .sidebar
     ul.nav.sidebar-menu
       li.header Creators, featured this week
-      - @creators.each do |creator|
+      - @creators_filters.each do |creator|
         li
           a.creator-filter
             = creator.name

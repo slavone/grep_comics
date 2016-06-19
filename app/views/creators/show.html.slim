@@ -1,0 +1,21 @@
+section.content
+  .box
+    .box-header
+      h3.box-title = @creator.name
+    .box-body
+    .row
+      .col-xs-4
+        h4 Comics written
+        ul
+          - @comics_as_writer.each do |comic|
+            li = comic.title
+      .col-xs-4
+        h4 Comics drawn
+        ul
+          - @comics_as_artist.each do |comic|
+            li = comic.title
+      .col-xs-4
+        h4 Drawn covers for
+        ul
+          - @comics_as_cover_artist.each do |comic|
+            li = comic.title

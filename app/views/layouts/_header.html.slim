@@ -1,11 +1,14 @@
 header.main-header
-  a href="#" class="logo"
+  a href=root_path class="logo"
     span.logo-lg GrepComics
   nav.navbar.navbar-static-top role="navigation"
-    a.sidebar-toggle href='#' data-toggle='offcanvas' role='button'
+    - if @creators_filters
+      a.sidebar-toggle data-toggle='offcanvas' role='button'
     .navbar-custom-menu
       ul.nav.navbar-nav
         li
-          a href='#' API
+          a href=creators_path Creators
         li
           a#wednesday-datepicker Releases
+        li
+          a href='#' API

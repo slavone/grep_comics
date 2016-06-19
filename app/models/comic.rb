@@ -28,15 +28,15 @@ class Comic < ApplicationRecord
   belongs_to :publisher
   belongs_to :weekly_list, optional: true
   has_many :writer_credits
-  has_many :writers, through: :writer_credits, source: :creator
+  has_many :writers, -> { order(:name) }, through: :writer_credits, source: :creator
   has_many :artist_credits
-  has_many :artists, through: :artist_credits, source: :creator
+  has_many :artists, -> { order(:name) }, through: :artist_credits, source: :creator
   has_many :cover_artist_credits
-  has_many :cover_artists, through: :cover_artist_credits, source: :creator
+  has_many :cover_artists, -> { order(:name) }, through: :cover_artist_credits, source: :creator
 
   def humanized_title
-    (title + 
-     "#{' #' + issue_number.to_s if item_type == 'single_issue'}" + 
+    (title +
+     "#{' #' + issue_number.to_s if item_type == 'single_issue'}" +
      "#{' VARIANT' if is_variant}" +
      "#{" #{reprint_number} PRINTING" if reprint_number && reprint_number > 1}").strip
   end
