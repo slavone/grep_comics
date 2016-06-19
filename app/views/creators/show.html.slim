@@ -8,14 +8,20 @@ section.content
         h4 Comics written
         ul
           - @comics_as_writer.each do |comic|
-            li = comic.title
+            li = comic.humanized_title
       .col-xs-4
         h4 Comics drawn
         ul
           - @comics_as_artist.each do |comic|
-            li = comic.title
+            li = comic.humanized_title
       .col-xs-4
         h4 Drawn covers for
         ul
           - @comics_as_cover_artist.each do |comic|
-            li = comic.title
+            li = comic.humanized_title
+    .row
+      .col-xs-12
+        h4 Worked for publishers
+        ul
+          - @creator.worked_for_publishers.each do |publisher|
+            li = publisher.name
