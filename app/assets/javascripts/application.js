@@ -13,7 +13,6 @@
 //= require jquery
 //= require jquery_ujs
 //= require bootstrap-sprockets
-//= require turbolinks
 //= require datatables.min.js
 //= require jquery.slimscroll.min.js
 //= require bootstrap-datepicker/core

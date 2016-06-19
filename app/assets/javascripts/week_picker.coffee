@@ -1,4 +1,4 @@
-$(document).on 'turbolinks:load', ->
+$(document).on 'ready', ->
   weekPicker = $('#wednesday-datepicker')
   weekPicker.datepicker
     daysOfWeekHighlighted: '3'

@@ -1,4 +1,4 @@
-$(document).on 'turbolinks:load', ->
+$(document).on 'ready', ->
   dataTable = $('#releases').DataTable
     order: []
     lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "All"]]
