@@ -15,7 +15,9 @@
 //= require bootstrap-sprockets
 //= require turbolinks
 //= require datatables.min.js
-//= require admin_lte.js
 //= require jquery.slimscroll.min.js
-//= require new_releases
+//= require bootstrap-datepicker/core
+//= require admin_lte.js
+//= require week_picker
+//= require releases_datatable
 //= require_tree .

@@ -1,7 +1,8 @@
-section.content
+section.content 
+  #weekday data-week=@weekly_list.wednesday_date
   .box
     .box-header
-      h3.box-title Browse new releases
+      h3.box-title = "Browse releases for #{@weekly_list.wednesday_date}"
     .box-body
       table.table.table-bordered.dataTable#releases
         thead

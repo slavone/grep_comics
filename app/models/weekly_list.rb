@@ -13,13 +13,26 @@ class WeeklyList < ApplicationRecord
   has_many :comics
 
   class << self
+    def earliest_wednesday_date
+      WeeklyList.order(:wednesday_date).limit(1).pluck(:wednesday_date).first
+    end
+
     def current_week_list
       WeeklyList.order(wednesday_date: :desc).first
+    end
+
+    def find_by_closest_date(date)
+      m = date.match /(?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})/
+      sanitized_date = "#{m[:year]}-#{m[:month]}-#{m[:day]}"
+
+      WeeklyList.order("abs(wednesday_date - date '#{sanitized_date}')").first
     end
   end
 
   def fetch_comics
-    self.comics.eager_load(:publisher).preload(:writers, :artists, :cover_artists).order('publishers.name', :title, :issue_number)
+    self.comics.eager_load(:publisher)
+               .preload(:writers, :artists, :cover_artists)
+               .order('publishers.name', :title, :issue_number)
   end
 
   def all_creators

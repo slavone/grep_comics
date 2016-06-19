@@ -42,5 +42,3 @@ $(document).on 'turbolinks:load', ->
       selector.addClass 'filterOn'
       dataTable.addSearchFilter creatorName
     dataTable.applySearchFilters()
-
-
