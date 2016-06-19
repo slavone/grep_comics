@@ -181,11 +181,11 @@ RSpec.describe DiamondComicsParser do
       end
 
       it 'when unexpected symbols in creator names' do
-        div = '<div class="StockCodeCreators">(W) Peter J. Tomasi (A) Doug Mahnke & Various (CA) Doug Mahnke, Mœbius</div>'
+        div = "<div class='StockCodeCreators'>(W) Peter J. Tomasi (A) Doug Mahnke & Various (CA) Doug Mahnke, Mœbius, Kevin O'Neil</div>"
         @noko_doc = Nokogiri::HTML(div)
         expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Peter J. Tomasi'], 
                                                          artists: ['Doug Mahnke'], 
-                                                         cover_artists: ['Doug Mahnke', 'Mœbius'] })
+                                                         cover_artists: ['Doug Mahnke', 'Mœbius', "Kevin O'Neil"] })
       end
 
       it 'when there is no writer' do
