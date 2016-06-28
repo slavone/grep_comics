@@ -3,25 +3,35 @@ section.content
     .box-header
       h3.box-title = @creator.name
     .box-body
-    .row
-      .col-xs-4
-        h4 Comics written
-        ul
-          - @comics_as_writer.each do |comic|
-            li = comic.humanized_title
-      .col-xs-4
-        h4 Comics drawn
-        ul
-          - @comics_as_artist.each do |comic|
-            li = comic.humanized_title
-      .col-xs-4
-        h4 Drawn covers for
-        ul
-          - @comics_as_cover_artist.each do |comic|
-            li = comic.humanized_title
-    .row
-      .col-xs-12
-        h4 Worked for publishers
-        ul
-          - @creator.worked_for_publishers.each do |publisher|
-            li = publisher.name
+      .row.col-xs-12
+        .nav-tabs-custom
+          ul.nav.nav-tabs
+            li.active
+              a href="#writers" data-toggle="tab" aria-expanded="true" 
+                = "Writer credits (#{@comics_as_writer.size})"
+            li
+              a href="#artists" data-toggle="tab" aria-expanded="true"
+                = "Artist credits (#{@comics_as_artist.size})"
+            li
+              a href="#cover_artists" data-toggle="tab" aria-expanded="true"
+                = "Cover artist credits (#{@comics_as_cover_artist.size})"
+            li
+              a href="#publishers" data-toggle="tab" aria-expanded="true"
+                = "Publishers (#{@publishers.size})"
+          .tab-content
+            .tab-pane.active#writers
+              ul.list-unstyled
+                - @comics_as_writer.each do |comic|
+                  li = comic_link comic
+            .tab-pane#artists
+              ul.list-unstyled
+                - @comics_as_artist.each do |comic|
+                  li = comic_link comic
+            .tab-pane#cover_artists
+              ul.list-unstyled
+                - @comics_as_cover_artist.each do |comic|
+                  li = comic_link comic
+            .tab-pane#publishers
+              ul.list-unstyled
+                - @publishers.each do |publisher|
+                  li = publisher.name
