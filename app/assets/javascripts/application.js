@@ -19,4 +19,5 @@
 //= require admin_lte.js
 //= require week_picker
 //= require releases_datatable
+//= require creators_datatable
 //= require_tree .

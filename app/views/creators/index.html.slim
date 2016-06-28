@@ -3,8 +3,19 @@ section.content
     .box-header
       h3.box-title All available creators
     .box-body
-      ul
-        - @creators.each do |creator|
-          li
-            a href=creator_path(creator)
-             = creator.name
+      table.table.table-bordered.dataTable#creators-table
+        thead
+          tr
+            th Name
+            th Writer credits
+            th Artist credits
+            th Cover artist credits
+        tbody
+          - @creators.each do |creator|
+            tr
+              td
+                a href=creator_path(creator)
+                  = creator.name
+              td = creator.writer_credits.size
+              td = creator.artist_credits.size
+              td = creator.cover_artist_credits.size

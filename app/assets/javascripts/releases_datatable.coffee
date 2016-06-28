@@ -8,6 +8,10 @@ $(document).on 'ready', ->
          "<'row'<'col-sm-12'tr>>" +
          "<'row'<'col-sm-5'i><'col-sm-7'p>>",
 
+  searchField = $('#tableFilter').html "<input class='form-control' style='width: 100%' placeholder='Search'>"
+  $(searchField).on 'search input paste cut', (e)->
+    dataTable.search( e.target.value ).draw()
+
   dataTable.searchFilters = []
   dataTable.addSearchFilter = (word) ->
     this.searchFilters.push word
@@ -16,10 +20,6 @@ $(document).on 'ready', ->
       elem != word
   dataTable.applySearchFilters = ->
     this.search(this.searchFilters.join('|'), true, false, true).draw()
-
-  searchField = $('#tableFilter').html "<input class='form-control' style='width: 100%' placeholder='Search'>"
-  $(searchField).on 'search input paste cut', (e)->
-    dataTable.search( e.target.value ).draw()
 
   $('#releases tbody').on 'click', 'tr', ->
     tr = $(this)

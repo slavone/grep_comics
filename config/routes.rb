@@ -3,5 +3,7 @@ Rails.application.routes.draw do
   get 'new_releases', to: 'weekly_lists#new_releases'
   get 'releases/:date', to: 'weekly_lists#show'
   resources :creators, only: [:index, :show]
+  resources :comics, only: :show
+  resources :publishers, only: :index
   root 'weekly_lists#new_releases'
 end
