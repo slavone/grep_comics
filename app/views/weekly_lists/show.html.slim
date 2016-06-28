@@ -23,7 +23,8 @@ section.content
                 img src=comic.cover_image height='330' width='215'
               td = comic.diamond_code
               td = comic.shipping_date
-              td = comic.humanized_title
+              td
+                = link_to comic.humanized_title, comic_path(comic)
               td = comic.issue_number
               td = comic.publisher&.name
               td.creators-list
