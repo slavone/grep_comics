@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      get :weekly_releases, to: "comics#weekly_releases"
       resources :comics, only: [:index]
       resources :publishers, only: [:index]
     end
