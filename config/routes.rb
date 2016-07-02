@@ -6,4 +6,11 @@ Rails.application.routes.draw do
   resources :comics, only: :show
   resources :publishers, only: :index
   root 'weekly_lists#new_releases'
+
+  namespace :api do
+    namespace :v1 do
+      resources :comics, only: [:index]
+      resources :publishers, only: [:index]
+    end
+  end
 end
