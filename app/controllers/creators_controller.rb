@@ -4,10 +4,10 @@ class CreatorsController < ApplicationController
   end
 
   def show
-    @creator = Creator.find params[:id]
-    @comics_as_writer = @creator.comics_as_writer
-    @comics_as_artist = @creator.comics_as_artist
-    @comics_as_cover_artist = @creator.comics_as_cover_artist
+    @creator = Creator.preload(comics_as_writer: :publisher,
+                               comics_as_artist: :publisher,
+                               comics_as_cover_artist: :publisher
+                              ).find params[:id]
     @publishers = @creator.worked_for_publishers
   end
 end

@@ -12,6 +12,8 @@ Rails.application.routes.draw do
       get :weekly_releases, to: "comics#weekly_releases"
       resources :comics, only: [:index]
       resources :publishers, only: [:index]
+      resources :creators, only: [:index]
+      get :creator, to: "creators#show"
     end
   end
 end

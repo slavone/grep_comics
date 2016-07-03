@@ -8,28 +8,28 @@ section.content
           ul.nav.nav-tabs
             li.active
               a href="#writers" data-toggle="tab" aria-expanded="true" 
-                = "Writer credits (#{@comics_as_writer.size})"
+                = "Writer credits (#{@creator.comics_as_writer.size})"
             li
               a href="#artists" data-toggle="tab" aria-expanded="true"
-                = "Artist credits (#{@comics_as_artist.size})"
+                = "Artist credits (#{@creator.comics_as_artist.size})"
             li
               a href="#cover_artists" data-toggle="tab" aria-expanded="true"
-                = "Cover artist credits (#{@comics_as_cover_artist.size})"
+                = "Cover artist credits (#{@creator.comics_as_cover_artist.size})"
             li
               a href="#publishers" data-toggle="tab" aria-expanded="true"
                 = "Publishers (#{@publishers.size})"
           .tab-content
             .tab-pane.active#writers
               ul.list-unstyled
-                - @comics_as_writer.each do |comic|
+                - @creator.comics_as_writer.each do |comic|
                   li = comic_link comic
             .tab-pane#artists
               ul.list-unstyled
-                - @comics_as_artist.each do |comic|
+                - @creator.comics_as_artist.each do |comic|
                   li = comic_link comic
             .tab-pane#cover_artists
               ul.list-unstyled
-                - @comics_as_cover_artist.each do |comic|
+                - @creator.comics_as_cover_artist.each do |comic|
                   li = comic_link comic
             .tab-pane#publishers
               ul.list-unstyled

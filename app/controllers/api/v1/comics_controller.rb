@@ -1,9 +1,8 @@
 class Api::V1::ComicsController < ApplicationController
   def index
-    logger.info '------------------------'
-    logger.info "Got params #{params.inspect}"
-    query = ApiQueryBuilder.new.build_query_for_comics params
-    logger.info "Build query #{query}"
+    query = log_query do
+      ApiQueryBuilder.new.build_query_for_comics params
+    end
     @comics = Comic.eager_load(:publisher)
                    .preload(:writers, :artists, :cover_artists)
                    .where(query)
@@ -12,19 +11,12 @@ class Api::V1::ComicsController < ApplicationController
   end
 
   def weekly_releases
-    logger.info '------------------------'
-    logger.info "Got params #{params.inspect}"
-    builder = ApiQueryBuilder.new
-    query = builder.build_query_for_comics params
-    logger.info "Build query #{query}"
+    query = log_query do
+      builder = ApiQueryBuilder.new
+      query = builder.build_query_for_comics params
+    end
     weekly_list = WeeklyList.find_by_closest_date params[:date]
     @comics = weekly_list.fetch_comics.where query
     render :index
-  end
-
-  private 
-
-  def logger
-    @logger = Logger.new "#{Rails.root}/log/api_v1.log"
   end
 end

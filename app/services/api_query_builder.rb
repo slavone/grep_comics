@@ -2,13 +2,32 @@ class ApiQueryBuilder
   NAME_SANITIZER = /^[\s\w\d]+/
   DATE_SANITIZER = /^\d{4}-\d{2}-\d{2}/
 
-  def self.sanitize_creators(unsafe_creators)
-    unsafe_creators.split(',').map do |creator|
+  def self.sanitize_array(string_as_array)
+    string_as_array.split(',').map do |creator|
       if m = creator.match(NAME_SANITIZER)
         m.to_s
       end
     end.compact
   end
+
+  PUBLISHERS_QUERIES = {
+    names: ->(query_input) do
+      names = ApiQueryBuilder.sanitize_array query_input
+      "publishers.name ~* '%(#{names.join('|')})%'"
+    end
+  }.freeze
+
+  CREATORS_QUERIES = {
+    names: ->(query_input) do
+      names = ApiQueryBuilder.sanitize_array query_input
+      "creators.name ~* '(#{names.join('|')})'"
+    end,
+    name: ->(query_input) do
+      if m = query_input.match(NAME_SANITIZER)
+        "creators.name ILIKE '%#{m.to_s}%'"
+      end
+    end
+  }.freeze
 
   COMICS_QUERIES = {
     publisher: ->(query_input) do
@@ -22,22 +41,22 @@ class ApiQueryBuilder
       end
     end,
     creators: ->(query_input) do
-      creators = ApiQueryBuilder.sanitize_creators query_input
+      creators = ApiQueryBuilder.sanitize_array query_input
       comics_in = Comic.filtered_by_creators(creators).map(&:id).join(',')
       "comics.id IN (#{comics_in})"
     end,
     writers: ->(query_input) do
-      creators = ApiQueryBuilder.sanitize_creators query_input
+      creators = ApiQueryBuilder.sanitize_array query_input
       comics_in = Comic.filtered_by_creators_of_type(creators, :writer)
       "comics.id IN (#{comics_in.map(&:id).join(',')})"
     end,
     artists: ->(query_input) do
-      creators = ApiQueryBuilder.sanitize_creators query_input
+      creators = ApiQueryBuilder.sanitize_array query_input
       comics_in = Comic.filtered_by_creators_of_type(creators, :artist)
       "comics.id IN (#{comics_in.map(&:id).join(',')})"
     end,
     cover_artists: ->(query_input) do
-      creators = ApiQueryBuilder.sanitize_creators query_input
+      creators = ApiQueryBuilder.sanitize_array query_input
       comics_in = Comic.filtered_by_creators_of_type(creators, :cover_artist)
       "comics.id IN (#{comics_in.map(&:id).join(',')})"
     end,
@@ -47,7 +66,7 @@ class ApiQueryBuilder
       end
     end,
     has_variant_cover: ->(query_input) do
-      if m = query_params.match(/(true)/i)
+      if m = query_input.match(/(true)/i)
         "comics.is_variant = '#{m.to_s}'"
       end
     end,
@@ -69,10 +88,25 @@ class ApiQueryBuilder
   }.freeze
 
   def build_query_for_comics(params)
-    present_params = params.keys.map(&:to_sym) & COMICS_QUERIES.keys
     build_query do |query|
-      present_params.each do |param|
-        query << COMICS_QUERIES[param].call(params[param])
+      params.keys.map(&:to_sym).each do |param|
+        query << COMICS_QUERIES[param]&.call(params[param])
+      end
+    end
+  end
+
+  def build_query_for_publishers(params)
+    build_query do |query|
+      params.keys.map(&:to_sym).each do |param|
+        query << PUBLISHERS_QUERIES[param]&.call(params[param])
+      end
+    end
+  end
+
+  def build_query_for_creators(params)
+    build_query do |query|
+      params.keys.map(&:to_sym).each do |param|
+        query << CREATORS_QUERIES[param]&.call(params[param])
       end
     end
   end
