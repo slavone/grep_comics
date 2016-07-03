@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   resources :publishers, only: :index
   root 'weekly_lists#new_releases'
 
+  get :api, to: 'static_pages#api_doc'
   namespace :api do
     namespace :v1 do
       get :weekly_releases, to: "comics#weekly_releases"
