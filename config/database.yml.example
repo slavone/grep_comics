@@ -82,6 +82,6 @@ test:
 #
 production:
   <<: *default
-  database: grep_comics_production
-  username: grep_comics
+  database: <%= ENV['GREP_COMICS_DATABASE_NAME'] %>
+  username: <%= ENV['GREP_COMICS_DATABASE_USERNAME'] %>
   password: <%= ENV['GREP_COMICS_DATABASE_PASSWORD'] %>
