@@ -1,24 +1,20 @@
-# set path to application
-app_dir = "/var/www/grep_comics"
-shared_dir = "#{app_dir}/shared"
-working_directory "#{app_dir}/current"
-pid               "#{app_dir}/current/tmp/pids/unicorn.pid"
-
-
-# Set unicorn options
-worker_processes 2
-timeout 30
-
-# Set up socket location
-listen "#{shared_dir}/sockets/unicorn.sock", :backlog => 64
-
-# Logging
-stderr_path "#{shared_dir}/log/unicorn.stderr.log"
-stdout_path "#{shared_dir}/log/unicorn.stdout.log"
-
-# Set master PID location
-pid "#{shared_dir}/pids/unicorn.pid"
-
+# set path to application                                                 
+app_dir = "/var/www/grep_comics"                                          
+shared_dir = "#{app_dir}/shared"                                          
+working_directory = "#{app_dir}/current"                                  
+pid "#{working_directory}/tmp/pids/unicorn.pid"                           
+                                                                          
+# Set unicorn options                                                     
+worker_processes 2                                                        
+timeout 30                                                                
+                                                                          
+# Set up socket location                                                  
+listen "#{working_directory}/tmp/sockets/unicorn.sock", :backlog => 64    
+                                                                          
+# Logging                                                                 
+stderr_path "#{shared_dir}/log/unicorn.stderr.log"                        
+stdout_path "#{shared_dir}/log/unicorn.stdout.log"                        
+                                                                          
 # use correct Gemfile on restarts
 before_exec do |server|
   ENV['BUNDLE_GEMFILE'] = "#{app_path}/current/Gemfile"
