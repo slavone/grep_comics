@@ -2,7 +2,7 @@ $(document).on 'ready', ->
   dataTable = $('#releases').DataTable
     order: []
     lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "All"]]
-    pageLength: 25
+    pageLength: 50
     dom: "<'row'<'col-sm-5'i><'col-sm-7'p>>" +
          "<'row'<'col-sm-6'l><'col-sm-6'<'#tableFilter'>>>" +
          "<'row'<'col-sm-12'tr>>" +

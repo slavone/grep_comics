@@ -93,4 +93,19 @@ class Comic < ApplicationRecord
      "#{" #{reprint_number} PRINTING" if reprint_number && reprint_number > 1}").strip
   end
 
+  def humanized_item_type
+    case item_type
+    when 'single_issue'
+      'SINGLE ISSUE'
+    when 'hardcover'
+      'HARDCOVER'
+    when 'softcover'
+      'SOFTCOVER'
+    when 'trade_paperback'
+      'TRADE PAPERBACK'
+    when 'graphic novel'
+      'GRAPHIC NOVEL'
+    end
+  end
+
 end
