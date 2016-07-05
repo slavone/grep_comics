@@ -14,7 +14,7 @@ set :rbenv_ruby, '2.3.1'
 set :linked_files, %w{config/database.yml config/secrets.yml}
 set :linked_dirs, %w{log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system}
 
-server '', user: 'deploy', roles: %w{app db web}
+server '%host ip%', user: '%user%', roles: %w{app db web}
 
 # role-based syntax
 # ==================
