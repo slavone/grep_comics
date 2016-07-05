@@ -34,11 +34,25 @@ class Comic < ApplicationRecord
   has_many :cover_artist_credits
   has_many :cover_artists, -> { order(:name) }, through: :cover_artist_credits, source: :creator
 
-  def self.build_creators_query(creators)
-    if creators.kind_of? String
-      "'#{creators}'"
-    else
-      creators.map { |c| "'#{c}'"}.join(',')
+  ITEM_TYPES_MAPPING = {
+    'single_issue' => 'SINGLE ISSUE',
+    'hardcover' => 'HARDCOVER',
+    'softcover' => 'SOFTCOVER',
+    'trade_paperback' => 'TRADE PAPERBACK',
+    'graphic novel' => 'GRAPHIC NOVEL'
+  }.freeze
+
+  class << self
+    def build_creators_query(creators)
+      if creators.kind_of? String
+        "'#{creators}'"
+      else
+        creators.map { |c| "'#{c}'"}.join(',')
+      end
+    end
+
+    def item_types
+      ITEM_TYPES_MAPPING.map { |_, v| v }
     end
   end
 
@@ -93,19 +107,9 @@ class Comic < ApplicationRecord
      "#{" #{reprint_number} PRINTING" if reprint_number && reprint_number > 1}").strip
   end
 
+
   def humanized_item_type
-    case item_type
-    when 'single_issue'
-      'SINGLE ISSUE'
-    when 'hardcover'
-      'HARDCOVER'
-    when 'softcover'
-      'SOFTCOVER'
-    when 'trade_paperback'
-      'TRADE PAPERBACK'
-    when 'graphic novel'
-      'GRAPHIC NOVEL'
-    end
+    ITEM_TYPES_MAPPING[item_type]
   end
 
 end

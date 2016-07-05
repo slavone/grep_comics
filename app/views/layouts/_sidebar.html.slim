@@ -1,8 +1,7 @@
 aside.main-sidebar
   .sidebar
     ul.nav.sidebar-menu
-      li.header Creators, featured this week
-      - @creators_filters.each do |creator|
-        li
-          a.creator-filter
-            = creator.name
+      li.header Filters
+      = render 'layouts/creators_filters', creators_filters: @creators_filters
+      = render 'layouts/editions_filters'
+      = render 'layouts/publishers_filters', publishers_filters: @publishers_filters

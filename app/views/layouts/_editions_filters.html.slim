@@ -1,0 +1,8 @@
+li.treeview
+  a 
+    span Edition types
+    i.fa.fa-angle-left.pull-right
+  ul.treeview-menu
+    - Comic.item_types.each do |item_type|
+      li
+        a.creator-filter = item_type

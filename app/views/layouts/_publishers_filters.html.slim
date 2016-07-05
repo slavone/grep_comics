@@ -1,0 +1,8 @@
+li.treeview
+  a 
+    span Publishers
+    i.fa.fa-angle-left.pull-right
+  ul.treeview-menu
+    - publishers_filters.each do |publisher|
+      li
+        a.creator-filter = publisher.name

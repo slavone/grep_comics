@@ -1,0 +1,9 @@
+li.treeview
+  a 
+    span Creators
+    i.fa.fa-angle-left.pull-right
+  ul.treeview-menu
+    - creators_filters.each do |creator|
+      li
+        a.creator-filter
+          = creator.name

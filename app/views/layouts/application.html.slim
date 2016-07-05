@@ -9,6 +9,6 @@ html
   body.fixed.skin-black.sidebar-collapse
     .wrapper
       = render 'layouts/header'
-      = render 'layouts/sidebar' if @creators_filters
+      = yield :sidebar
       .content-wrapper
         = yield
