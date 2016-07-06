@@ -12,6 +12,7 @@ $(document).on 'ready', ->
   $(searchField).on 'search input paste cut', (e)->
     dataTable.search( e.target.value ).draw()
 
+  dataTable.columns('.creators')
   dataTable.searchFilters = []
   dataTable.addSearchFilter = (word) ->
     this.searchFilters.push word
@@ -32,14 +33,29 @@ $(document).on 'ready', ->
       row.child(tr.data('preview')).show()
       tr.addClass('shown')
 
-  $(document).on 'click', '.creator-filter', (e)->
-    creatorName = e.target.innerText
+  appliedFilterLi = (value) ->
+    return '<li class="applied-filter"><a><span>' +
+      value + '</span><i class="fa fa-times pull-right"></i></a></li>'
+
+  $('.main-sidebar').on 'click', '.filterable', (e)->
+    filterValue = e.target.innerText
     selector = $(e.target)
 
     if selector.hasClass 'filterOn'
-      dataTable.removeSearchFilter creatorName
+      dataTable.removeSearchFilter filterValue
       selector.removeClass 'filterOn'
+      $('.applied-filter:contains("' + filterValue + '")').remove()
     else
+      dataTable.addSearchFilter filterValue
       selector.addClass 'filterOn'
-      dataTable.addSearchFilter creatorName
+      $('#applied_filters').after(appliedFilterLi(filterValue))
+
+    dataTable.applySearchFilters()
+
+  $('.main-sidebar').on 'click', '.applied-filter', (e)->
+    filterValue = e.target.innerText
+    console.log e.target.innerText
+    dataTable.removeSearchFilter filterValue
+    $('.filterOn:contains("' + filterValue + '")').removeClass 'filterOn'
+    $(e.target).remove()
     dataTable.applySearchFilters()
