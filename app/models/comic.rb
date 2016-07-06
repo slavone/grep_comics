@@ -39,7 +39,7 @@ class Comic < ApplicationRecord
     'hardcover' => 'HARDCOVER',
     'softcover' => 'SOFTCOVER',
     'trade_paperback' => 'TRADE PAPERBACK',
-    'graphic novel' => 'GRAPHIC NOVEL'
+    'graphic_novel' => 'GRAPHIC NOVEL'
   }.freeze
 
   class << self
