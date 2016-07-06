@@ -54,8 +54,7 @@ $(document).on 'ready', ->
 
   $('.main-sidebar').on 'click', '.applied-filter', (e)->
     filterValue = e.target.innerText
-    console.log e.target.innerText
     dataTable.removeSearchFilter filterValue
     $('.filterOn:contains("' + filterValue + '")').removeClass 'filterOn'
-    $(e.target).remove()
+    $(e.target).parent().remove()
     dataTable.applySearchFilters()
