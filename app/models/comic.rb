@@ -17,6 +17,7 @@
 #  weekly_list_id  :integer
 #  is_variant      :boolean
 #  reprint_number  :integer
+#  cover_thumbnail :string
 #
 # Foreign Keys
 #
@@ -25,7 +26,7 @@
 #
 
 class Comic < ApplicationRecord
-  belongs_to :publisher
+  belongs_to :publisher, optional: true
   belongs_to :weekly_list, optional: true
   has_many :writer_credits
   has_many :writers, -> { order(:name) }, through: :writer_credits, source: :creator
@@ -33,6 +34,8 @@ class Comic < ApplicationRecord
   has_many :artists, -> { order(:name) }, through: :artist_credits, source: :creator
   has_many :cover_artist_credits
   has_many :cover_artists, -> { order(:name) }, through: :cover_artist_credits, source: :creator
+
+  mount_uploader :cover_thumbnail, CoverUploader
 
   ITEM_TYPES_MAPPING = {
     'single_issue' => 'SINGLE ISSUE',

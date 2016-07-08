@@ -1,9 +1,9 @@
 = content_for :sidebar, render('layouts/sidebar')
 section.content
-  #weekday data-week=@weekly_list.wednesday_date
+  #weekday data-week=@weekly_list&.wednesday_date
   .box
     .box-header
-      h3.box-title = "Browse releases for #{@weekly_list.wednesday_date}"
+      h3.box-title = "Browse releases for #{@weekly_list&.wednesday_date}"
     .box-body
       table.table.table-bordered.dataTable#releases
         thead
@@ -18,10 +18,10 @@ section.content
             th Artists
             th Cover artists
         tbody
-          - @comics.each do |comic|
+          - @comics&.each do |comic|
             tr data-preview= comic.preview
               td
-                img src=comic.cover_image height='330' width='215'
+                = link_to image_tag(comic.cover_thumbnail&.url), comic.cover_image, target: '_blank'
               td = comic.diamond_code
               td = comic.shipping_date
               td

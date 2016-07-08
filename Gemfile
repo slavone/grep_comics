@@ -22,6 +22,9 @@ gem 'bootstrap-datepicker-rails'
 
 gem 'whenever', require: false
 
+gem 'mini_magick'
+gem 'carrierwave'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 

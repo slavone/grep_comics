@@ -3,7 +3,7 @@ li.treeview
     span Creators
     i.fa.fa-angle-left.pull-right
   ul.treeview-menu
-    - creators_filters.each do |creator|
+    - creators_filters&.each do |creator|
       li
         a.filterable
           = creator.name

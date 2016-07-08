@@ -73,6 +73,7 @@ class DBSaver
       item_type: comic_hash[:type],
       shipping_date: comic_hash[:shipping_date],
       cover_image: comic_hash[:cover_image_url],
+      remote_cover_thumbnail_url: comic_hash[:cover_image_url],
       is_variant: comic_hash[:additional_info][:variant_cover],
       reprint_number: comic_hash[:additional_info][:reprint_number]
     }
