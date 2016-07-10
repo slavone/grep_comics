@@ -5,4 +5,5 @@ li.treeview
   ul.treeview-menu
     - Comic.item_types.each do |item_type|
       li
-        a.filterable = item_type
+        a.filterable data-filter-type="editions"
+          = item_type

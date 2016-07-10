@@ -5,5 +5,5 @@ li.treeview
   ul.treeview-menu
     - creators_filters&.each do |creator|
       li
-        a.filterable
+        a.filterable data-filter-type="creators"
           = creator.name

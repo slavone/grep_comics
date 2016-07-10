@@ -12,15 +12,34 @@ $(document).on 'ready', ->
   $(searchField).on 'search input paste cut', (e)->
     dataTable.search( e.target.value ).draw()
 
-  dataTable.columns('.creators')
-  dataTable.searchFilters = []
-  dataTable.addSearchFilter = (word) ->
-    this.searchFilters.push word
-  dataTable.removeSearchFilter = (word) ->
-    this.searchFilters = this.searchFilters.filter (elem)->
+  dataTable.searchFilters = {
+    publishers: []
+    creators: []
+    editions: []
+  }
+
+  dataTable.addSearchFilter = (word, type) ->
+    this.searchFilters[type].push word
+
+  dataTable.removeSearchFilter = (word, type) ->
+    this.searchFilters[type] = this.searchFilters[type].filter (elem)->
       elem != word
-  dataTable.applySearchFilters = ->
-    this.search(this.searchFilters.join('|'), true, false, true).draw()
+
+  dataTable.applySearchFilter = (type)->
+    if type == 'creators'
+      this
+        .search(dataTable.searchFilters[type].join('|'), true, false, true)
+        .draw()
+    else
+      columnSelector = '#' + type
+      this.column(columnSelector)
+        .search(this.searchFilters[type].join('|'), true, false, true)
+        .draw()
+
+  dataTable.applySearchFilters = ()->
+    $.each this.searchFilters, (key, val)->
+      if val
+        dataTable.applySearchFilter key
 
   $('#releases tbody').on 'click', 'tr', ->
     tr = $(this)
@@ -33,28 +52,33 @@ $(document).on 'ready', ->
       row.child(tr.data('preview')).show()
       tr.addClass('shown')
 
-  appliedFilterLi = (value) ->
-    return '<li class="applied-filter"><a><span>' +
-      value + '</span><i class="fa fa-times pull-right"></i></a></li>'
+  appliedFilterLi = (type, value) ->
+    return '<li class="applied-filter"><a data-filter-type="' + type +
+    '">' + value + '</a></li>'
 
   $('.main-sidebar').on 'click', '.filterable', (e)->
     filterValue = e.target.innerText
     selector = $(e.target)
+    filterType = selector.data('filter-type')
 
     if selector.hasClass 'filterOn'
-      dataTable.removeSearchFilter filterValue
+      dataTable.removeSearchFilter filterValue, filterType
+
       selector.removeClass 'filterOn'
       $('.applied-filter:contains("' + filterValue + '")').remove()
     else
-      dataTable.addSearchFilter filterValue
+      dataTable.addSearchFilter filterValue, filterType
       selector.addClass 'filterOn'
-      $('#applied_filters').after(appliedFilterLi(filterValue))
+      $('#applied_filters').after(appliedFilterLi(filterType, filterValue))
 
-    dataTable.applySearchFilters()
+    dataTable.applySearchFilters(filterType)
 
   $('.main-sidebar').on 'click', '.applied-filter', (e)->
     filterValue = e.target.innerText
-    dataTable.removeSearchFilter filterValue
+    console.log $(e.target)
+    filterType = $(e.target).data('filter-type')
+
+    dataTable.removeSearchFilter filterValue, filterType
     $('.filterOn:contains("' + filterValue + '")').removeClass 'filterOn'
     $(e.target).parent().remove()
     dataTable.applySearchFilters()

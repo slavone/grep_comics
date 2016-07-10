@@ -12,11 +12,11 @@ section.content
             th Diamond code
             th Shipping date
             th Title
-            th Edition type
-            th Publisher
-            th Writers
-            th Artists
-            th Cover artists
+            th#editions Edition type
+            th#publishers Publisher
+            th.creators#writers Writers
+            th.creators#artists Artists
+            th.creators#cover_artists Cover artists
         tbody
           - @comics&.each do |comic|
             tr data-preview= comic.preview
@@ -28,15 +28,15 @@ section.content
                 = link_to comic.humanized_title, comic_path(comic)
               td = comic.humanized_item_type
               td = comic.publisher&.name
-              td.creators-list
+              td
                 - comic.writers&.each do |creator|
                   a href=creator_path(creator)
                     = creator.name
-              td.creators-list
+              td
                 - comic.artists&.each do |creator|
                   a href=creator_path(creator)
                     = creator.name
-              td.creators-list
+              td
                 - comic.cover_artists&.each do |creator|
                   a href=creator_path(creator)
                     = creator.name

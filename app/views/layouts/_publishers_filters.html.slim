@@ -5,4 +5,5 @@ li.treeview
   ul.treeview-menu
     - publishers_filters&.each do |publisher|
       li
-        a.filterable = publisher.name
+        a.filterable data-filter-type="publishers"
+          = publisher.name
