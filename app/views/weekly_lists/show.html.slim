@@ -4,7 +4,7 @@ section.content
   .box
     .box-header
       h3.box-title = "Browse releases for #{@weekly_list&.wednesday_date}"
-    .box-body
+    .box-body.table-responsive
       table.table.table-bordered.dataTable#releases
         thead
           tr
@@ -21,7 +21,8 @@ section.content
           - @comics&.each do |comic|
             tr data-preview= comic.preview
               td
-                = link_to image_tag(comic.cover_thumbnail&.url), comic.cover_image, target: '_blank'
+                .thumbnail
+                  = link_to image_tag(comic.cover_thumbnail&.url), comic.cover_image, target: '_blank'
               td = comic.diamond_code
               td = comic.shipping_date
               td
