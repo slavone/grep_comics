@@ -19,7 +19,7 @@
 @import "font-awesome";
 @import "bootstrap-datepicker3";
 
-#releases thead tr, tbody tr {
+table thead tr, tbody tr {
   th, td {
     text-align: center;
   }
@@ -40,4 +40,11 @@
 
 .creators-list a {
   display: block;
+}
+
+.calendar {
+  @extend .sidebar-toggle;
+  &:before {
+    content: "" !important;
+  }
 }

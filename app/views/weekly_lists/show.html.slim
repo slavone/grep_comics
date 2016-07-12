@@ -1,10 +1,11 @@
 = content_for :sidebar, render('layouts/sidebar')
-section.content
-  #weekday data-week=@weekly_list&.wednesday_date
+section.content#weekday data-week=@weekly_list&.wednesday_date
   .box
     .box-header
       h3.box-title = "Browse releases for #{@weekly_list&.wednesday_date}"
     .box-body.table-responsive
+      button.btn.btn-primary#toggle-filters data-toggle="offcanvas" Show filters
+      p style='margin-top: 2px;' Hint: you can click to on the logo on the header to toggle the filters sidebar
       table.table.table-bordered.dataTable#releases
         thead
           tr
@@ -21,8 +22,7 @@ section.content
           - @comics&.each do |comic|
             tr data-preview= comic.preview
               td
-                .thumbnail
-                  = link_to image_tag(comic.cover_thumbnail&.url), comic.cover_image, target: '_blank'
+                = link_to image_tag(comic.cover_thumbnail&.url, class: 'img-responsive'), comic.cover_image, target: '_blank'
               td = comic.diamond_code
               td = comic.shipping_date
               td

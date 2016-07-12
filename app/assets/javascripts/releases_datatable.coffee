@@ -1,10 +1,17 @@
 $(document).on 'ready', ->
+  $('#toggle-filters').on 'click', ->
+    if this.innerText == 'Show filters'
+      this.innerText = 'Hide filters'
+    else
+      this.innerText = 'Show filters'
+
   dataTable = $('#releases').DataTable
     order: []
     lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "All"]]
     pageLength: 50
-    dom: "<'row'<'col-sm-5'i><'col-sm-7'p>>" +
-         "<'row'<'col-sm-6'l><'col-sm-6'<'#tableFilter'>>>" +
+    dom: "<'row'<'col-sm-5'l>>" +
+         "<'row'<'col-sm-5'i><'col-sm-7'p>>" +
+         "<'row'<'col-sm-12'<'#tableFilter'>>>" +
          "<'row'<'col-sm-12'tr>>" +
          "<'row'<'col-sm-5'i><'col-sm-7'p>>",
 
