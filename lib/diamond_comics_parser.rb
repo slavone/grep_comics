@@ -71,14 +71,14 @@ class DiamondComicsParser
     }
   end
 
-  SELECTORS = { description: '.StockCodeDescription',
-                cover_image: '.StockCodeImage a',
-                publisher: '.StockCodePublisher',
-                creators: '.StockCodeCreators',
-                preview: '.PreviewsHtml',
-                price: '.StockCodeInfo .StockCodeSrp',
-                diamond_id: '.StockCodeDiamdNo',
-                shipping_date: '.StockCodeInShopsDate'
+  SELECTORS = { description: '.Title',
+                cover_image: '#MainContentImage',
+                publisher: '.Publisher',
+                creators: '.Creators',
+                preview: '.Text',
+                price: '.SRP',
+                diamond_id: '.ItemCode',
+                shipping_date: '.ReleaseDate'
   }.freeze
 
   def get_description(noko_nodes)
@@ -128,6 +128,7 @@ class DiamondComicsParser
 
   def parse_title(noko_nodes)
     desc = get_description noko_nodes
+
     item_type = identify_item_type desc
     case item_type
     #when 'hardcover', 'softcover', 'trade_paperback'
@@ -150,14 +151,13 @@ class DiamondComicsParser
 
   def parse_cover_image(noko_nodes)
     img_node = noko_nodes.css SELECTORS[:cover_image]
-    return ROOT_URL + img_node.attr('href').value unless img_node.empty?
+    return ROOT_URL + img_node.attr('src').value unless img_node.empty?
     ''
   end
 
   def parse_publisher(noko_nodes)
     publ_node = noko_nodes.css SELECTORS[:publisher]
-    matched = publ_node.inner_text.match /publisher:[\W\s]+(?<publisher>[\w\s\W]+)/i
-    return matched[:publisher] if matched
+    return publ_node.inner_text.strip unless publ_node.empty?
     ''
   end
 
@@ -171,20 +171,18 @@ class DiamondComicsParser
 
   def filter_creators_string(creators)
     #should probably gsub out & Various and TBD
-    if creators.kind_of?(String)
-      creators.gsub(/(?:& Various|Various|TBD)/, '')
-              .split(',')
-              .map(&:strip)
-              .reject(&:empty?)
-    else
-      creators
-    end
+    creators.map do |creator|
+      creator.gsub(/\s{2,}/, ' ')
+             .gsub(/(?:& Various|Various|TBD)/, '')
+             .split(',')
+             .map(&:strip)
+    end.flatten.reject(&:empty?)
   end
 
   def parse_creators(noko_nodes)
     creators_node = noko_nodes.css SELECTORS[:creators]
-    creators_text = creators_node.inner_text
-    writers, artists, cover_artists = '', '', ''
+    creators_text = creators_node.inner_text.strip
+    writers, artists, cover_artists = [], [], []
 
     creators_text.scan(/\((?:W|A|CA|W\/A|W\/A\/CA|A\/CA|W\/CA)\)[\s]*[\p{L}.,'&\s\-]+/).each do |creators_block|
       creators = creators_block.match /\(.+\)[\W\s]+(?<list>[\p{L}\W\s]+)/
@@ -197,14 +195,16 @@ class DiamondComicsParser
 
   def parse_preview(noko_nodes)
     preview_node = noko_nodes.css SELECTORS[:preview]
-    return preview_node.inner_text.strip unless preview_node.empty?
+    unless preview_node.empty?
+      only_text = preview_node.children.reject { |e| e.class != Nokogiri::XML::Text }
+      return only_text.map { |e| e.text.strip }.find { |e| !e.empty? } || ''
+    end
     ''
   end
 
   def parse_diamond_id(noko_nodes)
     diamond_id_node = noko_nodes.css SELECTORS[:diamond_id]
-    matched = diamond_id_node.inner_text.match /item code:\s+(?<diamond_id>(\w|\s|\.|\$)+)/i
-    return matched[:diamond_id].strip if matched
+    return diamond_id_node.inner_text.strip unless diamond_id_node.empty?
     ''
   end
 
@@ -217,8 +217,8 @@ class DiamondComicsParser
 
   def parse_shipping_date(noko_nodes)
     date_node = noko_nodes.css SELECTORS[:shipping_date]
-    matched = date_node.inner_text.match /in shops:\s+(?<month>\d+)\/(?<day>\d+)\/(?<year>\d+)/i
-    return Date.new matched[:year].to_i, matched[:month].to_i, matched[:day].to_i if matched
+    matched = date_node.inner_text.match /in shops:\s+(?<date>[\w\W\s]+)/i
+    return Date.parse(matched[:date]) if matched
     ''
   end
   
