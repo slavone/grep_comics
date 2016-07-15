@@ -4,7 +4,7 @@ section.content#weekday data-week=@weekly_list&.wednesday_date
     .box-header
       h3.box-title = "Browse releases for #{@weekly_list&.wednesday_date}"
     .box-body.table-responsive
-      button.btn.btn-primary#toggle-filters data-toggle="offcanvas" Show filters
+      button.btn.btn-primary.toggle-filters#toggle-filters-button data-toggle="offcanvas" Show filters
       p style='margin-top: 2px;' Hint: you can click to on the logo on the header to toggle the filters sidebar
       table.table.table-bordered.dataTable#releases
         thead
@@ -31,13 +31,16 @@ section.content#weekday data-week=@weekly_list&.wednesday_date
               td = comic.publisher&.name
               td
                 - comic.writers&.each do |creator|
-                  a href=creator_path(creator)
-                    = creator.name
+                  p
+                    a href=creator_path(creator)
+                      = creator.name
               td
                 - comic.artists&.each do |creator|
-                  a href=creator_path(creator)
-                    = creator.name
+                  p
+                    a href=creator_path(creator)
+                      = creator.name
               td
                 - comic.cover_artists&.each do |creator|
-                  a href=creator_path(creator)
-                    = creator.name
+                  p
+                    a href=creator_path(creator)
+                      = creator.name

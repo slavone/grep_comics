@@ -1,9 +1,10 @@
 $(document).on 'ready', ->
-  $('#toggle-filters').on 'click', ->
-    if this.innerText == 'Show filters'
-      this.innerText = 'Hide filters'
+  $('.toggle-filters').on 'click', ->
+    button = document.getElementById 'toggle-filters-button'
+    if button.innerText == 'Show filters'
+      button.innerText = 'Hide filters'
     else
-      this.innerText = 'Show filters'
+      button.innerText = 'Show filters'
 
   dataTable = $('#releases').DataTable
     order: []
