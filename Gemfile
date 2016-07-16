@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 
-
-gem 'rails', '>= 5.0.0.rc1', '< 5.1'
+gem 'rails'
 gem 'pg', '~> 0.18'
 gem 'puma', '~> 3.0'
 gem 'sass-rails', '~> 5.0'
@@ -21,6 +20,9 @@ gem 'font-awesome-sass'
 gem 'bootstrap-datepicker-rails'
 
 gem 'whenever', require: false
+
+gem 'kaminari'
+gem 'ajax-datatables-rails'
 
 gem 'mini_magick'
 gem 'carrierwave'

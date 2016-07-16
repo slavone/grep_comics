@@ -3,7 +3,7 @@ section.content
     .box-header
       h3.box-title All available creators
     .box-body
-      table.table.table-bordered.dataTable#creators-table
+      table.table.table-bordered.dataTable#creators-table data-source=creators_path(format: :json)
         thead
           tr
             th Name
@@ -11,11 +11,3 @@ section.content
             th Artist credits
             th Cover artist credits
         tbody
-          - @creators.each do |creator|
-            tr
-              td
-                a href=creator_path(creator)
-                  = creator.name
-              td = creator.writer_credits.size
-              td = creator.artist_credits.size
-              td = creator.cover_artist_credits.size

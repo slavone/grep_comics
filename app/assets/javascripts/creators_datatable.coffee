@@ -1,8 +1,18 @@
 $(document).on 'ready', ->
   dataTable = $('#creators-table').DataTable
-    order: []
+    processing: true
+    serverSide: true
+    ajax: $('#creators-table').data('source')
+    pagingType: 'full_numbers'
+    order: [[0, 'asc']]
     lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "All"]]
-    pageLength: 50
+    pageLength: 100
+    columns: [
+      { orderable: true },
+      { orderable: false },
+      { orderable: false },
+      { orderable: false }
+    ]
     dom: "<'row'<'col-sm-5'l>>" +
          "<'row'<'col-sm-5'i><'col-sm-7'p>>" +
          "<'row'<'col-sm-12'<'#tableFilter'>>>" +
