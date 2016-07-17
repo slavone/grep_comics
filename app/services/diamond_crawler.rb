@@ -76,9 +76,11 @@ class DiamondCrawler
     log 'DBSaver wasnt initialized', :error unless @db_saver
     diamond_ids.each do |diamond_id|
       comic_page = @parser.get_comic_page diamond_id
-      comic = @parser.parse_comic_info comic_page
-      log pretty_comic_log_message(comic)
-      @db_saver.persist_to_db comic
+      if @parser.page_found? comic_page
+        comic = @parser.parse_comic_info comic_page
+        log pretty_comic_log_message(comic)
+        @db_saver.persist_to_db comic
+      end
     end
   end
 end

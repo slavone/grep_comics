@@ -6,6 +6,17 @@ RSpec.describe DiamondComicsParser do
   let(:previews_page) { File.read(test_url) }
   let(:comic_page) { File.read('samples/APR160066_new.html') }
 
+  context 'checks if comic was found' do
+    it 'page found' do
+      expect(parser.page_found?(comic_page)).to eq(true)
+    end
+
+    it 'page not found' do
+      page_not_found = "<html><head><title>Object moved</title></head><body>\r\n<h2>Object moved to <a href=\"/PageNotFound\">here</a>.</h2>\r\n</body></html>\r\n"
+      expect(parser.page_found?(page_not_found)).to eq(false)
+    end
+  end
+
   context 'parses weekly releases list' do
     it "wednesday date" do
       expect(parser.parse_wednesday_date(previews_page)).to eq(Date.new 2016, 6, 8)

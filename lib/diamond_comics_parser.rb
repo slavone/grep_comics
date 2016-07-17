@@ -116,6 +116,10 @@ class DiamondComicsParser
     add_info
   end
 
+  def page_found?(page)
+    page.match(/PAGENOTFOUND/i).nil?
+  end
+
   def parse_additional_info(noko_nodes)
     desc = get_description(noko_nodes)
     build_additional_info desc
