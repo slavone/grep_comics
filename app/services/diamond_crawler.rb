@@ -33,7 +33,7 @@ class DiamondCrawler
       initialize_db_saver(wl)
       log "Created new WeeklyList"
     end
-    diamond_ids = comics_diamond_ids new_releases 
+    diamond_ids = comics_diamond_ids new_releases
     count ||= diamond_ids.size
     log 'Starting crawling process'
     scrape_data diamond_ids.first(count)

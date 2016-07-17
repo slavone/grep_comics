@@ -196,8 +196,8 @@ class DiamondComicsParser
   def parse_preview(noko_nodes)
     preview_node = noko_nodes.css SELECTORS[:preview]
     unless preview_node.empty?
-      only_text = preview_node.children.reject { |e| e.class != Nokogiri::XML::Text }
-      return only_text.map { |e| e.text.strip }.find { |e| !e.empty? } || ''
+      only_text = preview_node.children.select(&:text?)
+      return only_text.map { |e| e.to_s.strip }.reject(&:empty?).join
     end
     ''
   end

@@ -8,6 +8,18 @@ $(document).on 'ready', ->
 
   dataTable = $('#releases').DataTable
     order: []
+    columns: [
+      { orderable: false },
+      { orderable: false },
+      { orderable: true },
+      { orderable: true },
+      { orderable: true },
+      { orderable: true },
+      { orderable: true },
+      { orderable: true },
+      { orderable: true },
+      { orderable: true }
+    ]
     lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "All"]]
     pageLength: 50
     dom: "<'row'<'col-sm-5'l>>" +
@@ -49,8 +61,11 @@ $(document).on 'ready', ->
       if val
         dataTable.applySearchFilter key
 
-  $('#releases tbody').on 'click', 'tr', ->
-    tr = $(this)
+  $('#releases tbody').on 'click', '#toggle_preview', ->
+    jqThis = $(this)
+    jqThis.toggleClass 'fa-plus-circle fa-minus-circle'
+
+    tr = $(this).closest('tr')
     row = dataTable.row(tr)
 
     if row.child.isShown()

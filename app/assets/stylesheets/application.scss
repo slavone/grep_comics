@@ -48,3 +48,7 @@ table thead tr, tbody tr {
     content: "" !important;
   }
 }
+
+i.fa-plus-circle, i.fa-minus-circle {
+  cursor: pointer;
+}

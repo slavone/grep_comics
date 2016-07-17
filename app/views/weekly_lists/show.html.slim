@@ -10,6 +10,7 @@ section.content#weekday data-week=@weekly_list&.wednesday_date
         thead
           tr
             th Cover
+            th Preview
             th Diamond code
             th Shipping date
             th Title
@@ -23,6 +24,8 @@ section.content#weekday data-week=@weekly_list&.wednesday_date
             tr data-preview= comic.preview
               td
                 = link_to image_tag(comic.cover_thumbnail&.url, class: 'img-responsive'), comic.cover_image, target: '_blank'
+              td
+                i.fa.fa-plus-circle.fa-2x#toggle_preview
               td = comic.diamond_code
               td = comic.shipping_date
               td
