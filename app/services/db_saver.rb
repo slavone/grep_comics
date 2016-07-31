@@ -4,6 +4,8 @@ class DBSaver
     @logger = Logger.new "#{Rails.root}/log/db_saver.log"
   end
 
+  NO_IMAGE_AVAILABLE_PNG_MD5 = 'ce0bf4477ccfac6ce8147649949f840b'
+
   #TODO think about what to do with TBD. maybe add another column which flags them for retry later?
   def persist_to_db(comic_hash)
     log '--------------------------------------------'
@@ -22,13 +24,20 @@ class DBSaver
   end
 
   def save_new_comic(comic_hash)
-    comic_params = map_params_to_model(comic_hash)
-    publisher = build_publisher comic_hash
-    creators = build_creators comic_hash[:creators]
-    comic_params.merge!(publisher: publisher, weekly_list: @weekly_list).merge! creators
+    comic_params = build_comic_params comic_hash
     created_comic = Comic.create comic_params
     log "Persisted comic #{comic_hash[:diamond_code]} #{comic_hash[:title]}"
     created_comic
+  end
+
+  def build_comic_params(comic_hash)
+    comic_params = map_params_to_model(comic_hash)
+    publisher = build_publisher comic_hash
+    creators = build_creators comic_hash[:creators]
+    cover_params = cover_image_params comic_hash[:cover_image_url]
+    comic_params.merge!(publisher: publisher, weekly_list: @weekly_list)
+                .merge!(creators)
+                .merge!(cover_params)
   end
 
   def cover_artists_already_associated(comic, cover_artists)
@@ -43,6 +52,19 @@ class DBSaver
       log "Persisted new creator #{name}"
       Creator.create name: name
     end
+  end
+
+  def cover_image_params(cover_url)
+    if image_available? cover_url
+      { remote_cover_thumbnail_url: cover_url, no_cover_available: false }
+    else
+      { remote_cover_thumbnail_url: cover_url, no_cover_available: true }
+    end
+  end
+
+  def image_available?(cover_url)
+    cover = Net::HTTP.get URI(cover_url)
+    Digest::MD5.hexdigest(cover) != NO_IMAGE_AVAILABLE_PNG_MD5
   end
 
   def build_creators(creators_hash)
@@ -65,15 +87,14 @@ class DBSaver
   end
 
   def map_params_to_model(comic_hash)
-    { diamond_code: comic_hash[:diamond_id], 
+    { diamond_code: comic_hash[:diamond_id],
       title: comic_hash[:title],
-      issue_number: comic_hash[:issue_number], 
+      issue_number: comic_hash[:issue_number],
       preview: comic_hash[:preview],
-      suggested_price: BigDecimal.new(comic_hash[:suggested_price].gsub /\$/, ''), 
+      suggested_price: BigDecimal.new(comic_hash[:suggested_price].gsub /\$/, ''),
       item_type: comic_hash[:type],
       shipping_date: comic_hash[:shipping_date],
       cover_image: comic_hash[:cover_image_url],
-      remote_cover_thumbnail_url: comic_hash[:cover_image_url],
       is_variant: comic_hash[:additional_info][:variant_cover],
       reprint_number: comic_hash[:additional_info][:reprint_number]
     }

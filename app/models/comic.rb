@@ -2,22 +2,23 @@
 #
 # Table name: comics
 #
-#  id              :integer          not null, primary key
-#  diamond_code    :string
-#  title           :string
-#  issue_number    :integer
-#  preview         :text
-#  suggested_price :decimal(, )
-#  item_type       :string
-#  shipping_date   :date
-#  publisher_id    :integer
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  cover_image     :string
-#  weekly_list_id  :integer
-#  is_variant      :boolean
-#  reprint_number  :integer
-#  cover_thumbnail :string
+#  id                 :integer          not null, primary key
+#  diamond_code       :string
+#  title              :string
+#  issue_number       :integer
+#  preview            :text
+#  suggested_price    :decimal(, )
+#  item_type          :string
+#  shipping_date      :date
+#  publisher_id       :integer
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  cover_image        :string
+#  weekly_list_id     :integer
+#  is_variant         :boolean
+#  reprint_number     :integer
+#  cover_thumbnail    :string
+#  no_cover_available :boolean
 #
 # Foreign Keys
 #
