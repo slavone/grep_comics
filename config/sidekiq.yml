@@ -1,0 +1,7 @@
+---
+:concurrency: 20
+:pidfile: tmp/pids/sidekiq.pid
+production:
+  :concurrency: 20
+:queues:
+  - comic_scraper_workers

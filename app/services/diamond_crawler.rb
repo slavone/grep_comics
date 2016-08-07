@@ -31,14 +31,7 @@ class DiamondCrawler
     options[:count] ||= diamond_ids_count
     log "Scraped #{diamond_ids_count} diamond_ids. Creating sidekiq tasks for #{options[:count]}/#{diamond_ids_count} of them"
     diamond_ids.first(options[:count]).each do |diamond_id|
-      #ComicScraper.perform_async diamond_id, @weekly_list.id
-      db_saver = DBSaver.new @weekly_list.id
-      comic_page = @parser.get_comic_page diamond_id
-      if @parser.page_found? comic_page
-        comic = @parser.parse_comic_info comic_page
-        log pretty_comic_log_message(comic)
-        db_saver.persist_to_db comic
-      end
+      ComicScraper.perform_async diamond_id, @weekly_list.id
     end
   rescue => e
     log "Something went wrong :( . Error message: #{e.message}", :error

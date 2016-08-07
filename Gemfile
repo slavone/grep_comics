@@ -27,6 +27,8 @@ gem 'ajax-datatables-rails'
 gem 'mini_magick'
 gem 'carrierwave'
 
+gem 'sidekiq'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
