@@ -14,6 +14,6 @@ RBENV_INIT = %Q{export PATH=/home/#{ENV['USER']}/.rbenv/shims:/home/#{ENV['USER'
 job_type :rbenv_rake, RBENV_INIT + "cd :path && :environment_variable=:environment bundle exec rake :task --silent :output}"
 job_type :rbenv_runner, RBENV_INIT + "cd :path && bin/rails runner -e :environment ':task' :output}"
 
-every 1.minute do
-  rbenv_runner 'DiamondCrawler.new.test_cron', environment: 'development'
+every 1.day, at: '0am' do
+  rbenv_runner "DiamondCrawler.new.start_process(DiamondComicsParser::CURRENT_WEEK)", environment: 'production'
 end
