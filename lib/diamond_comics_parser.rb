@@ -4,6 +4,8 @@ class DiamondComicsParser
   CATALOG = 'http://www.previewsworld.com/Catalog/'.freeze
   ROOT_URL = 'http://www.previewsworld.com'.freeze
 
+  NO_IMAGE_AVAILABLE_PNG_MD5 = 'ce0bf4477ccfac6ce8147649949f840b'
+
   def get_page(page_url)
     url = URI.parse page_url
     Net::HTTP.get url
@@ -67,8 +69,16 @@ class DiamondComicsParser
       type: parse_item_type(doc),
       shipping_date: parse_shipping_date(doc),
       additional_info: parse_additional_info(doc),
-      cover_image_url: parse_cover_image(doc)
+      cover_image_url: parse_cover_image(doc),
+      cover_available: cover_available?(parse_cover_image(doc))
     }
+  end
+
+  def cover_available?(cover_url)
+    return false unless cover_url
+
+    cover = Net::HTTP.get URI(cover_url)
+    Digest::MD5.hexdigest(cover) != NO_IMAGE_AVAILABLE_PNG_MD5
   end
 
   SELECTORS = { description: '.Title',

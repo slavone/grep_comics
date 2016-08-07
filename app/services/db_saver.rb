@@ -1,10 +1,8 @@
 class DBSaver
-  def initialize(weekly_list)
-    @weekly_list = weekly_list
+  def initialize(weekly_list_id)
+    @weekly_list_id = weekly_list_id
     @logger = Logger.new "#{Rails.root}/log/db_saver.log"
   end
-
-  NO_IMAGE_AVAILABLE_PNG_MD5 = 'ce0bf4477ccfac6ce8147649949f840b'
 
   #TODO think about what to do with TBD. maybe add another column which flags them for retry later?
   def persist_to_db(comic_hash)
@@ -34,8 +32,8 @@ class DBSaver
     comic_params = map_params_to_model(comic_hash)
     publisher = build_publisher comic_hash
     creators = build_creators comic_hash[:creators]
-    cover_params = cover_image_params comic_hash[:cover_image_url]
-    comic_params.merge!(publisher: publisher, weekly_list: @weekly_list)
+    cover_params = cover_image_params comic_hash
+    comic_params.merge!(publisher: publisher, weekly_list_id: @weekly_list_id)
                 .merge!(creators)
                 .merge!(cover_params)
   end
@@ -54,17 +52,12 @@ class DBSaver
     end
   end
 
-  def cover_image_params(cover_url)
-    if image_available? cover_url
-      { remote_cover_thumbnail_url: cover_url, no_cover_available: false }
+  def cover_image_params(comic_hash)
+    if comic_hash[:cover_available]
+      { remote_cover_thumbnail_url: comic_hash[:cover_image_url], no_cover_available: false }
     else
-      { remote_cover_thumbnail_url: cover_url, no_cover_available: true }
+      { remote_cover_thumbnail_url: comic_hash[:cover_image_url], no_cover_available: true }
     end
-  end
-
-  def image_available?(cover_url)
-    cover = Net::HTTP.get URI(cover_url)
-    Digest::MD5.hexdigest(cover) != NO_IMAGE_AVAILABLE_PNG_MD5
   end
 
   def build_creators(creators_hash)

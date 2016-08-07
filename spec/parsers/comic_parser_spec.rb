@@ -260,7 +260,8 @@ RSpec.describe DiamondComicsParser do
                                                         diamond_id: 'APR160066',
                                                         shipping_date: Date.new(2016, 6, 8),
                                                         additional_info: {},
-                                                        cover_image_url: 'http://www.previewsworld.com/SiteImage/CatalogImage/STL006317?type=1'
+                                                        cover_image_url: 'http://www.previewsworld.com/SiteImage/CatalogImage/STL006317?type=1',
+                                                        cover_available: true
     })
   end
 end
