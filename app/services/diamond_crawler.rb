@@ -9,6 +9,41 @@ class DiamondCrawler
     log 'Hey its cron'
   end
 
+  def start_process(list_url, options = {})
+    log '---------------------------------'
+    log 'DiamondCrawler started'
+    releases_page = @parser.get_page list_url
+    listed_date = @parser.parse_wednesday_date(releases_page)
+    log "Listed date is #{listed_date}"
+    if @weekly_list = WeeklyList.find_by(wednesday_date: listed_date)
+      if !options[:overwrite] && @weekly_list.list == releases_page
+        log 'List wasnt updated, finishing process'
+        return
+      else
+        log "List was updated"
+        @weekly_list.update list: releases_page
+      end
+    else
+      @weekly_list = WeeklyList.create list: releases_page, wednesday_date: listed_date
+    end
+    diamond_ids = comics_diamond_ids releases_page
+    diamond_ids_count = diamond_ids.size
+    options[:count] ||= diamond_ids_count
+    log "Scraped #{diamond_ids_count} diamond_ids. Creating sidekiq tasks for #{options[:count]}/#{diamond_ids_count} of them"
+    diamond_ids.first(options[:count]).each do |diamond_id|
+      #ComicScraper.perform_async diamond_id, @weekly_list.id
+      db_saver = DBSaver.new @weekly_list.id
+      comic_page = @parser.get_comic_page diamond_id
+      if @parser.page_found? comic_page
+        comic = @parser.parse_comic_info comic_page
+        log pretty_comic_log_message(comic)
+        db_saver.persist_to_db comic
+      end
+    end
+  rescue => e
+    log "Something went wrong :( . Error message: #{e.message}", :error
+  end
+
   def test_process(count = nil, go_anyway = false, not_current_week_list = nil)
     log '---------------------------------'
     log 'DiamondCrawler started'
