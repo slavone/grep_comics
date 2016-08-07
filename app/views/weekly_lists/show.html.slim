@@ -23,7 +23,7 @@ section.content#weekday data-week=@weekly_list&.wednesday_date
           - @comics&.each do |comic|
             tr data-preview= comic.preview
               td
-                = link_to image_tag(comic.cover_thumbnail&.url, class: 'img-responsive'), comic.cover_image, target: '_blank' if comic.cover_thumbnail
+                = link_to image_tag(comic.cover_thumbnail&.url, class: 'img-responsive', size: "215x330"), comic.cover_image, target: '_blank' if comic.cover_thumbnail
               td
                 i.fa.fa-plus-circle.fa-2x#toggle_preview
               td = link_to comic.diamond_code, "http://www.previewsworld.com/Catalog/#{comic.diamond_code}"
