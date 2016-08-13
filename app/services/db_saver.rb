@@ -15,6 +15,18 @@ class DBSaver
     end
   end
 
+  def find_and_update_comic(comic_hash)
+    comic = Comic.find_by diamond_code: comic_hash[:diamond_id]
+    comic_params = build_comic_params comic_hash
+
+    comic.assign_attributes comic_params
+    if comic.changed?
+      comic.save
+      log "Updated comic #{comic_hash[:diamond_code]} #{comic_hash[:title]}"
+    end
+    comic
+  end
+
   private
 
   def log(message, msg_type = :info)

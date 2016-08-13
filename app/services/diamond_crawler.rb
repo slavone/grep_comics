@@ -31,10 +31,16 @@ class DiamondCrawler
     log diamond_ids.inspect
     log "Scraped #{diamond_ids_count} diamond_ids. Creating sidekiq tasks for #{options[:count]}/#{diamond_ids_count} of them"
     diamond_ids.first(options[:count]).each do |diamond_id|
-      ComicScraper.perform_async diamond_id, @weekly_list.id
+      ComicScraper.perform_async :create, diamond_id, @weekly_list.id
     end
   rescue => e
     log "Something went wrong :( . Error message: #{e.message}", :error
+  end
+
+  def retry_for_updates(weekly_list)
+    weekly_list.comics_with_no_covers.each do |comic|
+      ComicScraper.perform_async :update, comic.diamond_code, weekly_list.id
+    end
   end
 
   private

@@ -7,13 +7,18 @@ class ComicScraper
     @parser = DiamondComicsParser.new
   end
 
-  def perform(diamond_id, weekly_list_id)
+  def perform(action, diamond_id, weekly_list_id)
     db_saver = DBSaver.new weekly_list_id
     comic_page = @parser.get_comic_page diamond_id
     if @parser.page_found? comic_page
       comic = @parser.parse_comic_info comic_page
       log pretty_comic_log_message(comic)
-      db_saver.persist_to_db comic
+      case action
+      when 'create'
+        db_saver.persist_to_db comic
+      when 'update'
+        db_saver.find_and_update_comic comic
+      end
     else
       log "No page was found for comic with id #{diamond_id}"
     end
