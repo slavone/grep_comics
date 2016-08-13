@@ -9,6 +9,10 @@ class CoverUploader < CarrierWave::Uploader::Base
     "uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
   end
 
+  def default_url(*args)
+    ActionController::Base.helpers.asset_path 'no_image_available.png'
+  end
+
 	def optimize
     manipulate! do |img|
       return img unless img.mime_type.match /image\/jpeg/

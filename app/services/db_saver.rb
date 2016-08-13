@@ -56,7 +56,7 @@ class DBSaver
     if comic_hash[:cover_available]
       { remote_cover_thumbnail_url: comic_hash[:cover_image_url], no_cover_available: false }
     else
-      { remote_cover_thumbnail_url: comic_hash[:cover_image_url], no_cover_available: true }
+      { no_cover_available: true }
     end
   end
 
