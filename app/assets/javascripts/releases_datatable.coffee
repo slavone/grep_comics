@@ -30,7 +30,7 @@ $(document).on 'ready', ->
 
   searchField = $('#tableFilter').html "<input class='form-control' style='width: 100%' placeholder='Search'>"
   $(searchField).on 'search input paste cut', (e)->
-    dataTable.search( e.target.value ).draw()
+    dataTable.search( e.target.value.replace(/\?/, '\\?'), true, false, true ).draw()
 
   dataTable.searchFilters = {
     publishers: []
@@ -48,7 +48,7 @@ $(document).on 'ready', ->
   dataTable.applySearchFilter = (type)->
     if type == 'creators'
       this
-        .search(dataTable.searchFilters[type].join('|'), true, false, true)
+        .search(dataTable.searchFilters[type].join('|').replace(/\?/, '\\?'), true, false, true)
         .draw()
     else
       columnSelector = '#' + type

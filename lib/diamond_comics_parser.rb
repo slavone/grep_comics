@@ -198,8 +198,8 @@ class DiamondComicsParser
     creators_text = creators_node.inner_text.strip
     writers, artists, cover_artists = [], [], []
 
-    creators_text.scan(/\((?:W|A|CA|W\/A|W\/A\/CA|A\/CA|W\/CA)\)[\s]*[\p{L}.,'&\s\-\d]+/).each do |creators_block|
-      creators = creators_block.match /\(.+\)[\W\s]+(?<list>[\p{L}\W\s\d]+)/
+    creators_text.scan(/\((?:W|A|CA|W\/A|W\/A\/CA|A\/CA|W\/CA)\)[\s]*[\p{L}.,'&\s\-\d?]+/).each do |creators_block|
+      creators = creators_block.match /\(.+\)[\W\s]+(?<list>[\p{L}\W\s\d?]+)/
       writers << creators[:list].strip if creators_block.match /(?<=\(|\/)W(?=\)|\/)/
       artists << creators[:list].strip if creators_block.match /(?<=\(|\/)A(?=\)|\/)/
       cover_artists << creators[:list].strip if creators_block.match /(?<=\(|\/)CA(?=\)|\/)/
