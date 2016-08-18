@@ -13,7 +13,7 @@ class ApiQueryBuilder
   PUBLISHERS_QUERIES = {
     names: ->(query_input) do
       names = ApiQueryBuilder.sanitize_array query_input
-      "publishers.name ~* '%(#{names.join('|')})%'"
+      "publishers.name ~* '(#{names.join('|')})'"
     end
   }.freeze
 
