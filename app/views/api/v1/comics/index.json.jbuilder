@@ -1,4 +1,4 @@
-json.total Comic.count
+json.total @comics.size
 json.comics @comics.each do |comic|
   json.diamond_code comic.diamond_code
   json.title comic.title

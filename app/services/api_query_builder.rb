@@ -5,7 +5,7 @@ class ApiQueryBuilder
   def self.sanitize_array(string_as_array)
     string_as_array.split(',').map do |creator|
       if m = creator.match(NAME_SANITIZER)
-        m.to_s
+        m.to_s.strip
       end
     end.compact
   end
@@ -65,7 +65,7 @@ class ApiQueryBuilder
         "comics.shipping_date = '#{m.to_s}'"
       end
     end,
-    has_variant_cover: ->(query_input) do
+    has_variant_covers: ->(query_input) do
       if m = query_input.match(/(true)/i)
         "comics.is_variant = '#{m.to_s}'"
       end
@@ -80,7 +80,7 @@ class ApiQueryBuilder
         "comics.reprint_number IS NOT NULL"
       end
     end,
-    item_type: ->(query_input) do
+    type: ->(query_input) do
       if m = query_input.match(/[\w]+/)
         "comics.item_type = '#{m.to_s}'"
       end

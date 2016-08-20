@@ -2,7 +2,7 @@ Fabricator(:comic) do
   diamond_code 'JAN160154'
   title 'SOME COMIC'
   issue_number 23
-  preview 'Stuff happends'
+  preview 'Stuff happens'
   item_type { ['single_issue', 'hardcover', 'trade_paperback'].sample }
   suggested_price 3.99
   shipping_date Date.new(2016, 6, 8)
@@ -10,4 +10,5 @@ Fabricator(:comic) do
   writers { [Fabricate(:creator)] }
   artists { [Fabricate(:creator)] }
   cover_artists { [Fabricate(:creator)] }
+  cover_image 'cover_url.com'
 end
