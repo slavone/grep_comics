@@ -1,5 +1,5 @@
 json.name @creator.name
-json.written_comics @creator.comics_as_writer do |comic|
+json.writtenComics @creator.comics_as_writer do |comic|
   json.diamond_code comic.diamond_code
   json.title comic.title
   json.type comic.item_type
@@ -11,7 +11,7 @@ json.written_comics @creator.comics_as_writer do |comic|
   json.preview comic.preview
   json.original_cover_url comic.cover_image
 end
-json.drawn_comics @creator.comics_as_artist do |comic|
+json.drawnComics @creator.comics_as_artist do |comic|
   json.diamond_code comic.diamond_code
   json.title comic.title
   json.type comic.item_type
@@ -23,7 +23,7 @@ json.drawn_comics @creator.comics_as_artist do |comic|
   json.preview comic.preview
   json.original_cover_url comic.cover_image
 end
-json.drawn_covers_for_comics @creator.comics_as_cover_artist do |comic|
+json.drawnCovers @creator.comics_as_cover_artist do |comic|
   json.diamond_code comic.diamond_code
   json.title comic.title
   json.type comic.item_type
@@ -35,6 +35,6 @@ json.drawn_covers_for_comics @creator.comics_as_cover_artist do |comic|
   json.preview comic.preview
   json.original_cover_url comic.cover_image
 end
-json.worked_for_publishers @worked_for_publishers do |publisher|
+json.workedForPublishers @worked_for_publishers do |publisher|
   json.name publisher.name
 end
