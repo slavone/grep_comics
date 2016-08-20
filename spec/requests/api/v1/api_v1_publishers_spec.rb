@@ -6,6 +6,7 @@ RSpec.describe "Api::V1::Publishers", type: :request do
       ['DARK HORSE COMICS', 'MARVEL COMICS', 'FANTAGRAPHICS',
        'KOYAMA PRESS', 'DC COMICS']
     end
+
     before do
       publishers_list.each do |publisher|
         Fabricate(:publisher, name: publisher )
@@ -22,11 +23,16 @@ RSpec.describe "Api::V1::Publishers", type: :request do
       expect(response).to have_http_status(400)
     end
 
-    it 'responds with schema' do
+    it 'responds with the right schema' do
       get api_v1_publishers_path(format: :json)
       schema = {
         'total' => 5,
-        'publishers' => publishers_list.sort.map { |name| { 'name' => name, 'total_comics' => 0 } }
+        'publishers' => publishers_list.sort.map do |name|
+          {
+            'name' => name,
+            'total_comics' => 0
+          }
+        end
       }
       @parsed_response = JSON.parse(response.body)
       expect(@parsed_response).to eq(schema)
@@ -48,10 +54,9 @@ RSpec.describe "Api::V1::Publishers", type: :request do
     end
 
     context 'with params' do
-      it 'returns by name' do
+      it 'names' do
         get api_v1_publishers_path(format: :json, names: 'dark,marvel')
         @parsed_response = JSON.parse(response.body)
-        puts @parsed_response.inspect
         expect(@parsed_response['total']).to eq(2)
         expect(@parsed_response['publishers'].map { |e| e['name'] }).to eq(['DARK HORSE COMICS', 'MARVEL COMICS'])
       end
