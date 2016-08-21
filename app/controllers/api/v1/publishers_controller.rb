@@ -1,4 +1,4 @@
-class Api::V1::PublishersController < ApplicationController
+class Api::V1::PublishersController < Api::BaseApiController
   def index
     query = log_query do
       ApiQueryBuilder.new.build_query_for_publishers index_params

@@ -1,4 +1,4 @@
-class Api::V1::ComicsController < ApplicationController
+class Api::V1::ComicsController < Api::BaseApiController
   def index
     query = log_query do
       ApiQueryBuilder.new.build_query_for_comics comics_params

@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "Api::V1::Comics", type: :request do
   let(:titles) { ['Superman', 'Batman', 'Spider-Man', 'Rhino'] }
+  let(:api_key) { ApiKey.generate_new.key }
   let(:seed_comics) do
     weekly_list_1 = Fabricate(:weekly_list, wednesday_date: Date.new(2016, 6, 8) )
     weekly_list_2 = Fabricate(:weekly_list, wednesday_date: Date.new(2015, 6, 8) )
@@ -26,13 +27,18 @@ RSpec.describe "Api::V1::Comics", type: :request do
 
   describe "GET /api_v1_comics" do
     it "200 with format json" do
-      get api_v1_comics_path(format: :json)
+      get api_v1_comics_path(format: :json, key: api_key)
       expect(response).to have_http_status(200)
     end
 
     it "400 with other formats" do
-      get api_v1_comics_path
+      get api_v1_comics_path(key: api_key)
       expect(response).to have_http_status(400)
+    end
+
+    it "401 unless key provided" do
+      get api_v1_comics_path
+      expect(response).to have_http_status(401)
     end
 
     it 'responds with the right schema' do
@@ -74,7 +80,7 @@ RSpec.describe "Api::V1::Comics", type: :request do
         }]
       }
 
-      get api_v1_comics_path(format: :json)
+      get api_v1_comics_path(format: :json, key: api_key)
       @parsed_response = JSON.parse(response.body)
       expect(@parsed_response).to eq(schema)
     end
@@ -82,7 +88,7 @@ RSpec.describe "Api::V1::Comics", type: :request do
     context 'no params' do
       before do
         seed_comics
-        get api_v1_comics_path(format: :json)
+        get api_v1_comics_path(format: :json, key: api_key)
         @parsed_response = JSON.parse(response.body)
       end
 
@@ -99,7 +105,7 @@ RSpec.describe "Api::V1::Comics", type: :request do
 
       context 'publisher' do
         it 'filters by strict publisher name' do
-          get api_v1_comics_path(format: :json, publisher: 'batman publisher')
+          get api_v1_comics_path(format: :json, publisher: 'batman publisher', key: api_key)
           @parsed_response = JSON.parse(response.body)
           expect(@parsed_response['comics'].map { |c| c['title'] }).to include('Batman')
           expect(@parsed_response['comics'].map { |c| c['title'] }).not_to include('Superman')
@@ -108,7 +114,7 @@ RSpec.describe "Api::V1::Comics", type: :request do
 
       context 'title' do
         it 'filters by titles that are ILIKE queried string' do
-          get api_v1_comics_path(format: :json, title: 'man')
+          get api_v1_comics_path(format: :json, title: 'man', key: api_key)
           @parsed_response = JSON.parse(response.body)
           expect(@parsed_response['comics'].map { |c| c['title'] }).to include('Batman', 'Superman')
           expect(@parsed_response['comics'].map { |c| c['title'] }).not_to include('Rhino')
@@ -117,7 +123,7 @@ RSpec.describe "Api::V1::Comics", type: :request do
 
       context 'creators' do
         it 'displays comics that has any queried creators credited' do
-          get api_v1_comics_path(format: :json, creators: 'writer_1, artist_2')
+          get api_v1_comics_path(format: :json, creators: 'writer_1, artist_2', key: api_key)
           @parsed_response = JSON.parse(response.body)
           creators_arr = @parsed_response['comics'].map do |comic|
             comic['creators'].map do |_, creators_a|
@@ -131,7 +137,7 @@ RSpec.describe "Api::V1::Comics", type: :request do
 
       context 'writers' do
         it 'displays comics that has any queried writers credited' do
-          get api_v1_comics_path(format: :json, writers: 'writer_1, writer_2')
+          get api_v1_comics_path(format: :json, writers: 'writer_1, writer_2', key: api_key)
           @parsed_response = JSON.parse(response.body)
           creators_arr = @parsed_response['comics'].map do |comic|
             comic['creators'].map do |_, creators_a|
@@ -145,7 +151,7 @@ RSpec.describe "Api::V1::Comics", type: :request do
 
       context 'artists' do
         it 'displays comics that has any queried artists credited' do
-          get api_v1_comics_path(format: :json, artists: 'artist_1, artist_2')
+          get api_v1_comics_path(format: :json, artists: 'artist_1, artist_2', key: api_key)
           @parsed_response = JSON.parse(response.body)
           creators_arr = @parsed_response['comics'].map do |comic|
             comic['creators'].map do |_, creators_a|
@@ -159,7 +165,7 @@ RSpec.describe "Api::V1::Comics", type: :request do
 
       context 'cover_artists' do
         it 'displays comics that has any queried cover_artists credited' do
-          get api_v1_comics_path(format: :json, cover_artists: 'cover_artist_1, cover_artist_3')
+          get api_v1_comics_path(format: :json, cover_artists: 'cover_artist_1, cover_artist_3', key: api_key)
           @parsed_response = JSON.parse(response.body)
           creators_arr = @parsed_response['comics'].map do |comic|
             comic['creators'].map do |_, creators_a|
@@ -174,7 +180,7 @@ RSpec.describe "Api::V1::Comics", type: :request do
       context 'shipping_date' do
         it 'filters by shipping date' do
           queried_date, wrong_date = '2016-06-08', '2015-06-08'
-          get api_v1_comics_path(format: :json, shipping_date: queried_date)
+          get api_v1_comics_path(format: :json, shipping_date: queried_date, key: api_key)
           @parsed_response = JSON.parse(response.body)
           expect(@parsed_response['comics'].map { |c| c['shipping_date'] }).to include(queried_date)
           expect(@parsed_response['comics'].map { |c| c['shipping_date'] }).not_to include(wrong_date)
@@ -183,14 +189,14 @@ RSpec.describe "Api::V1::Comics", type: :request do
 
       context 'has_variant_covers' do
         it 'filters to only comics that have variant covers' do
-          get api_v1_comics_path(format: :json, has_variant_covers: true)
+          get api_v1_comics_path(format: :json, has_variant_covers: true, key: api_key)
           @parsed_response = JSON.parse(response.body)
           expect(@parsed_response['comics'].map { |c| c['has_variant_covers'] }).to include(true)
           expect(@parsed_response['comics'].map { |c| c['has_variant_covers'] }).not_to include(false, nil)
         end
 
         it 'doesnt crash if its not true' do
-          get api_v1_comics_path(format: :json, has_variant_covers: 'fasdasdsadsad')
+          get api_v1_comics_path(format: :json, has_variant_covers: 'fasdasdsadsad', key: api_key)
           @parsed_response = JSON.parse(response.body)
           expect(@parsed_response['comics'].size).to eq(titles.size)
         end
@@ -198,7 +204,7 @@ RSpec.describe "Api::V1::Comics", type: :request do
 
       context 'issue_number' do
         it 'filters by issue number' do
-          get api_v1_comics_path(format: :json, issue_number: 2)
+          get api_v1_comics_path(format: :json, issue_number: 2, key: api_key)
           @parsed_response = JSON.parse(response.body)
           expect(@parsed_response['comics'].map { |c| c['issue_number'] }).to include(2)
           expect(@parsed_response['comics'].map { |c| c['issue_number'] }).not_to include(1, 3, 4)
@@ -207,7 +213,7 @@ RSpec.describe "Api::V1::Comics", type: :request do
 
       context 'reprint' do
         it 'filters to only comics that are reprints' do
-          get api_v1_comics_path(format: :json, reprint: true)
+          get api_v1_comics_path(format: :json, reprint: true, key: api_key)
           @parsed_response = JSON.parse(response.body)
           expect(@parsed_response['comics'].map { |c| c['reprint_number'] }).not_to include(false, nil)
         end
@@ -215,7 +221,7 @@ RSpec.describe "Api::V1::Comics", type: :request do
 
       context 'type' do
         it 'filters by item_type' do
-          get api_v1_comics_path(format: :json, type: 'single_issue')
+          get api_v1_comics_path(format: :json, type: 'single_issue', key: api_key)
           @parsed_response = JSON.parse(response.body)
           expect(@parsed_response['comics'].map { |c| c['type'] }).to include('single_issue')
           expect(@parsed_response['comics'].map { |c| c['type'] }).not_to include('trade_paperback')
@@ -226,13 +232,18 @@ RSpec.describe "Api::V1::Comics", type: :request do
 
   describe "GET /api_v1_weekly_releases" do
     it "200 with format json" do
-      get api_v1_weekly_releases_path(format: :json, date: '10-10-2014')
+      get api_v1_weekly_releases_path(format: :json, date: '10-10-2014', key: api_key)
       expect(response).to have_http_status(200)
     end
 
     it "400 with other formats" do
-      get api_v1_weekly_releases_path
+      get api_v1_weekly_releases_path(key: api_key)
       expect(response).to have_http_status(400)
+    end
+
+    it "401 unless key provided" do
+      get api_v1_weekly_releases_path
+      expect(response).to have_http_status(401)
     end
 
     it 'responds with the same schema as api/v1/comics' do
@@ -274,14 +285,14 @@ RSpec.describe "Api::V1::Comics", type: :request do
         }]
       }
 
-      get api_v1_weekly_releases_path(format: :json, date: '06-08-2016')
+      get api_v1_weekly_releases_path(format: :json, date: '06-08-2016', key: api_key)
       @parsed_response = JSON.parse(response.body)
       expect(@parsed_response).to eq(schema)
     end
 
     context 'no params' do
       it "400, requires date" do
-        get api_v1_weekly_releases_path(format: :json)
+        get api_v1_weekly_releases_path(format: :json, key: api_key)
         expect(response).to have_http_status(400)
       end
     end
@@ -293,7 +304,7 @@ RSpec.describe "Api::V1::Comics", type: :request do
 
       context 'date' do
         it 'only returns comics, associated with the weekly list' do
-          get api_v1_weekly_releases_path(format: :json, date: '2016-06-08')
+          get api_v1_weekly_releases_path(format: :json, date: '2016-06-08', key: api_key)
           @parsed_response = JSON.parse(response.body)
 
           expect(@parsed_response['comics'].map { |c| Date.parse c['shipping_date'] }).to include(Date.parse '2016-06-08')
@@ -303,7 +314,7 @@ RSpec.describe "Api::V1::Comics", type: :request do
 
       context 'creators' do
         it 'displays comics that has any queried creators credited' do
-          get api_v1_weekly_releases_path(format: :json, date: '2016-06-08', creators: 'writer_1, artist_2')
+          get api_v1_weekly_releases_path(format: :json, date: '2016-06-08', creators: 'writer_1, artist_2', key: api_key)
           @parsed_response = JSON.parse(response.body)
           creators_arr = @parsed_response['comics'].map do |comic|
             comic['creators'].map do |_, creators_a|

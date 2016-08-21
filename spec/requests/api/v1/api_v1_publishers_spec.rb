@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe "Api::V1::Publishers", type: :request do
+  let(:api_key) { ApiKey.generate_new.key }
+
   describe "GET /api_v1_publishers" do
     let(:publishers_list) do
       ['DARK HORSE COMICS', 'MARVEL COMICS', 'FANTAGRAPHICS',
@@ -14,17 +16,22 @@ RSpec.describe "Api::V1::Publishers", type: :request do
     end
 
     it "200 with format json" do
-      get api_v1_publishers_path(format: :json)
+      get api_v1_publishers_path(format: :json, key: api_key)
       expect(response).to have_http_status(200)
     end
 
     it "400 with other formats" do
-      get api_v1_publishers_path
+      get api_v1_publishers_path(key: api_key)
       expect(response).to have_http_status(400)
     end
 
+    it "401 unless key provided" do
+      get api_v1_publishers_path
+      expect(response).to have_http_status(401)
+    end
+
     it 'responds with the right schema' do
-      get api_v1_publishers_path(format: :json)
+      get api_v1_publishers_path(format: :json, key: api_key)
       schema = {
         'total' => 5,
         'publishers' => publishers_list.sort.map do |name|
@@ -40,7 +47,7 @@ RSpec.describe "Api::V1::Publishers", type: :request do
 
     context 'no params' do
       before do
-        get api_v1_publishers_path(format: :json)
+        get api_v1_publishers_path(format: :json, key: api_key)
         @parsed_response = JSON.parse(response.body)
       end
 
@@ -55,7 +62,7 @@ RSpec.describe "Api::V1::Publishers", type: :request do
 
     context 'with params' do
       it 'names' do
-        get api_v1_publishers_path(format: :json, names: 'dark,marvel')
+        get api_v1_publishers_path(format: :json, names: 'dark,marvel', key: api_key)
         @parsed_response = JSON.parse(response.body)
         expect(@parsed_response['total']).to eq(2)
         expect(@parsed_response['publishers'].map { |e| e['name'] }).to eq(['DARK HORSE COMICS', 'MARVEL COMICS'])

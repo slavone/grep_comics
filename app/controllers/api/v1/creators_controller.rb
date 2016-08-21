@@ -1,4 +1,4 @@
-class Api::V1::CreatorsController < ApplicationController
+class Api::V1::CreatorsController < Api::BaseApiController
   def index
     query = log_query do
       ApiQueryBuilder.new.build_query_for_creators index_params
