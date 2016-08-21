@@ -3,4 +3,96 @@ section.content
     .box-header
       h3.box-title API documentation
     .box-body
-      p You can do stuff
+      p All of the data can be accessed via JSON API. It is completely free to use, but you must have a key to access it. I haven't implemented any kind of user registration yet, so if you want a key, send me an email at %my email address%.
+      h4 How to use it:
+      ol
+        li GET http request
+        li Content-Type header should be set as 'application/json'
+        li 'key' query param should be your API key
+        li Make a request to the url beneath, where %resource_name% is the name of the resource that you need. Available resources and their specific query params are listed below.
+      p
+        a href='api/v1/%resource_name%' grepcomics.io/api/v1/%resource_name%
+      h4 Example request with curl:
+      p curl -H "Content-Type: application/json" "grepcomics.io/api/v1/creators?key=API_KEY&some_param=some_value"
+      h4 List of resources:
+      .nav-tabs-custom
+        ul.nav.nav-tabs
+          li.active
+            a href="#creators" data-toggle="tab" aria-expanded="true" Creators
+          li
+            a href="#publishers" data-toggle="tab" aria-expanded="true" Publishers
+          li
+            a href="#comics" data-toggle="tab" aria-expanded="true" Comics
+        .tab-content
+          .tab-pane.active#creators
+            h3 Get list of creators
+            p
+              a href='api/v1/creators' grepcomics.io/api/v1/creators
+            h4 Query params
+            table.table.table-bordered
+              thead
+                tr
+                  th Param
+                  th Required
+                  th Description
+              tbody
+                tr
+                  td names
+                  td false
+                  td Filters creators by names. Query consists of the list of creators names, separated by commas. Names are case insensitive.
+                tr
+                  td colspan=3 example: "grepcomics.io/api/v1/creators?key=API_KEY&names=Michael,grant,ANN"
+            h4 Response example
+            blockquote
+              code
+                p = '{'
+                p &emsp;'total': 1,
+                p &emsp;'creators': [
+                p &emsp;&emsp;{
+                p &emsp;&emsp;&emsp;'name': 'Michael DeForge',
+                p &emsp;&emsp;&emsp;'totalWriterCredits': 0,
+                p &emsp;&emsp;&emsp;'totalArtistCredits': 0,
+                p &emsp;&emsp;&emsp;'totalCoverArtistCredits': 1
+                p &emsp;&emsp;}
+                p &emsp;]
+                p = '}'
+            h3 Get single creator with their comics credits
+            p
+              a href='api/v1/creator' grepcomics.io/api/v1/creator
+            h4 Query params
+            table.table.table-bordered
+              thead
+                tr
+                  th Param
+                  th Required
+                  th Description
+              tbody
+                tr
+                  td name
+                  td true
+                  td Finds creator by name. Name is case insensitive.
+                tr
+                  td colspan=3 example: "grepcomics.io/api/v1/creator?key=API_KEY&name=DeForge"
+            h4 Response example
+            blockquote
+              code
+                p = '{'
+                p &emsp;'name': 'Michael DeForge',
+                p &emsp;'workedForPublishers': ['IMAGE COMICS'],
+                p &emsp;'writtenComics': [],
+                p &emsp;'drawnComics': [],
+                p &emsp;'drawnCovers': [
+                p &emsp;&emsp;{
+                p &emsp;&emsp;&emsp;'diamond_code': "JUN160636",
+                p &emsp;&emsp;&emsp;'title': 'Island',
+                p &emsp;&emsp;&emsp;'issue_number': 10,
+                p &emsp;&emsp;&emsp;'publisher': 'IMAGE COMICS',
+                p &emsp;&emsp;&emsp;'preview': 'The award-winning, oversized comics magazine continues!...',
+                p &emsp;&emsp;&emsp;'shipping_date': '2016-08-24'
+                p &emsp;&emsp;}
+                p &emsp;]
+                p = '}'
+          .tab-pane#publishers
+            p Publishers
+          .tab-pane#comics
+            p Comics
