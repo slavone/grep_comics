@@ -17,17 +17,21 @@ class Api::V1::ComicsController < ApplicationController
   end
 
   def weekly_releases
+    raise ArgumentError unless params[:date]
+
     query = log_query do
       builder = ApiQueryBuilder.new
       query = builder.build_query_for_comics comics_params
     end
     weekly_list = WeeklyList.find_by_closest_date params[:date]
-    @comics = weekly_list.fetch_comics.where query
+    @comics = weekly_list&.fetch_comics&.where query
 
     respond_to do |format|
       format.json { render :index }
     end
 
+  rescue ArgumentError
+    render json: { message: "Wrong query params: should have 'date' param." }, status: 400
   rescue ActionController::UnknownFormat
     render json: { message: 'Wrong format' }, status: 400
   end

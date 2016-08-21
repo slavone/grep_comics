@@ -11,4 +11,5 @@ Fabricator(:comic) do
   artists { [Fabricate(:creator)] }
   cover_artists { [Fabricate(:creator)] }
   cover_image 'cover_url.com'
+  weekly_list { Fabricate(:weekly_list) }
 end

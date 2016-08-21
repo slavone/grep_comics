@@ -23,8 +23,7 @@ class WeeklyList < ApplicationRecord
     end
 
     def find_by_closest_date(date)
-      m = date.match /(?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})/
-      sanitized_date = "#{m[:year]}-#{m[:month]}-#{m[:day]}"
+      sanitized_date = Date.parse date
 
       WeeklyList.order("abs(wednesday_date - date '#{sanitized_date}')").first
     end

@@ -3,12 +3,15 @@ require 'rails_helper'
 RSpec.describe "Api::V1::Comics", type: :request do
   let(:titles) { ['Superman', 'Batman', 'Spider-Man', 'Rhino'] }
   let(:seed_comics) do
+    weekly_list_1 = Fabricate(:weekly_list, wednesday_date: Date.new(2016, 6, 8) )
+    weekly_list_2 = Fabricate(:weekly_list, wednesday_date: Date.new(2015, 6, 8) )
+
     titles.each_with_index do |comic_title, i|
       Fabricate(:comic) do
         diamond_code i
         title comic_title
         issue_number i
-        reprint_number i if [true, false].sample
+        reprint_number (i.even? ? i : false )
         is_variant (i.even? ? true : false )
         publisher { Fabricate(:publisher, name: "#{comic_title} PUBLISHER".upcase) }
         item_type (i.even? ? 'single_issue' : 'trade_paperback')
@@ -16,9 +19,11 @@ RSpec.describe "Api::V1::Comics", type: :request do
         artists { [Fabricate(:creator, name: "artist_#{i}")] }
         cover_artists { [Fabricate(:creator, name: "cover_artist_#{i}")] }
         shipping_date (i.even? ? Date.new(2016, 6, 8) : Date.new(2015, 6, 8) )
+        weekly_list { i.even? ? weekly_list_1 : weekly_list_2 }
       end
     end
   end
+
   describe "GET /api_v1_comics" do
     it "200 with format json" do
       get api_v1_comics_path(format: :json)
@@ -220,14 +225,97 @@ RSpec.describe "Api::V1::Comics", type: :request do
   end
 
   describe "GET /api_v1_weekly_releases" do
-    xit "200 with format json" do
-      get api_v1_comics_path(format: :json)
+    it "200 with format json" do
+      get api_v1_weekly_releases_path(format: :json, date: '10-10-2014')
       expect(response).to have_http_status(200)
     end
 
-    xit "400 with other formats" do
-      get api_v1_comics_path
+    it "400 with other formats" do
+      get api_v1_weekly_releases_path
       expect(response).to have_http_status(400)
     end
+
+    it 'responds with the same schema as api/v1/comics' do
+      Fabricate(:comic) do
+        diamond_code '11111'
+        title 'some comic'
+        issue_number 2
+        reprint_number 3
+        item_type 'single_issue'
+        writers { [Fabricate(:creator, name: 'writer')] }
+        artists { [Fabricate(:creator, name: 'artist')] }
+        cover_artists { [Fabricate(:creator, name: 'cover_artist')] }
+        shipping_date Date.new(2016, 6, 8)
+      end
+
+      schema = {
+        'total' => 1,
+        'comics' => [{
+          'diamond_code' => '11111',
+          'title' => 'some comic',
+          'type' => 'single_issue',
+          'issue_number' => 2,
+          'reprint_number' => 3,
+          'preview' => 'Stuff happens',
+          'original_cover_url' => 'cover_url.com',
+          'publisher' => 'DC COMICS',
+          'shipping_date' => '2016-06-08',
+          'creators' => {
+            'writers' => [{
+              'name' => 'writer'
+            }],
+            'artists' => [{
+              'name' => 'artist'
+            }],
+            'cover_artists' => [{
+              'name' => 'cover_artist'
+            }]
+          }
+        }]
+      }
+
+      get api_v1_weekly_releases_path(format: :json, date: '06-08-2016')
+      @parsed_response = JSON.parse(response.body)
+      expect(@parsed_response).to eq(schema)
+    end
+
+    context 'no params' do
+      it "400, requires date" do
+        get api_v1_weekly_releases_path(format: :json)
+        expect(response).to have_http_status(400)
+      end
+    end
+
+    context 'with params' do
+      before do
+        seed_comics
+      end
+
+      context 'date' do
+        it 'only returns comics, associated with the weekly list' do
+          get api_v1_weekly_releases_path(format: :json, date: '2016-06-08')
+          @parsed_response = JSON.parse(response.body)
+
+          expect(@parsed_response['comics'].map { |c| Date.parse c['shipping_date'] }).to include(Date.parse '2016-06-08')
+          expect(@parsed_response['comics'].map { |c| Date.parse c['shipping_date'] }).not_to include(Date.parse '2015-06-08')
+        end
+      end
+
+      context 'creators' do
+        it 'displays comics that has any queried creators credited' do
+          get api_v1_weekly_releases_path(format: :json, date: '2016-06-08', creators: 'writer_1, artist_2')
+          @parsed_response = JSON.parse(response.body)
+          creators_arr = @parsed_response['comics'].map do |comic|
+            comic['creators'].map do |_, creators_a|
+              creators_a.map { |creator| creator['name'] }
+            end
+          end.flatten
+          expect(creators_arr).to include('artist_2')
+          expect(creators_arr).not_to include('writer_0', 'writer_1', 'artist_3')
+        end
+      end
+
+    end
+
   end
 end
