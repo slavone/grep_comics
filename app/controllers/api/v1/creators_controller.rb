@@ -32,8 +32,7 @@ class Api::V1::CreatorsController < ApplicationController
     end
 
   rescue ArgumentError
-    logger.info 'Wrong query params'
-    render json: { message: 'Wrong query params' }, status: 400
+    render json: { message: "Wrong query params: should have 'name' param" }, status: 400
   rescue ActionController::UnknownFormat
     render json: { message: 'Wrong format' }, status: 400
   end
