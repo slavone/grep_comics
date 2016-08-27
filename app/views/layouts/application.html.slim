@@ -5,6 +5,7 @@ html
     = csrf_meta_tags
     = stylesheet_link_tag 'application', media: 'all'
     = javascript_include_tag 'application'
+    = render 'layouts/google_analytics' if Rails.env.production?
 
   body.fixed.skin-black.sidebar-collapse
     .wrapper
