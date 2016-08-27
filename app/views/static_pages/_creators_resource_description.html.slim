@@ -1,0 +1,67 @@
+h3 Get list of creators
+p
+  a href='api/v1/creators' grepcomics.io/api/v1/creators
+h4 Query params
+table.table.table-bordered
+  thead
+    tr
+      th Param
+      th Required
+      th Description
+  tbody
+    tr
+      td names
+      td false
+      td Filters creators by names. Query consists of the list of creators names, separated by commas. Names are case insensitive.
+    tr
+      td colspan=3 example: "grepcomics.io/api/v1/creators?key=API_KEY&names=Michael,grant,ANN"
+h4 Response example
+blockquote
+  code
+    p = '{'
+    p &emsp;'total': 1,
+    p &emsp;'creators': [
+    p &emsp;&emsp;{
+    p &emsp;&emsp;&emsp;'name': 'Michael DeForge',
+    p &emsp;&emsp;&emsp;'totalWriterCredits': 0,
+    p &emsp;&emsp;&emsp;'totalArtistCredits': 0,
+    p &emsp;&emsp;&emsp;'totalCoverArtistCredits': 1
+    p &emsp;&emsp;}
+    p &emsp;]
+    p = '}'
+h3 Get single creator with their comics credits
+p
+  a href='api/v1/creator' grepcomics.io/api/v1/creator
+h4 Query params
+table.table.table-bordered
+  thead
+    tr
+      th Param
+      th Required
+      th Description
+  tbody
+    tr
+      td name
+      td true
+      td Finds creator by name. Name is case insensitive.
+    tr
+      td colspan=3 example: "grepcomics.io/api/v1/creator?key=API_KEY&name=DeForge"
+h4 Response example
+blockquote
+  code
+    p = '{'
+    p &emsp;'name': 'Michael DeForge',
+    p &emsp;'workedForPublishers': ['IMAGE COMICS'],
+    p &emsp;'writtenComics': [],
+    p &emsp;'drawnComics': [],
+    p &emsp;'drawnCovers': [
+    p &emsp;&emsp;{
+    p &emsp;&emsp;&emsp;'diamond_code': "JUN160636",
+    p &emsp;&emsp;&emsp;'title': 'Island',
+    p &emsp;&emsp;&emsp;'issue_number': 10,
+    p &emsp;&emsp;&emsp;'publisher': 'IMAGE COMICS',
+    p &emsp;&emsp;&emsp;'preview': 'The award-winning, oversized comics magazine continues!...',
+    p &emsp;&emsp;&emsp;'shipping_date': '2016-08-24'
+    p &emsp;&emsp;}
+    p &emsp;]
+    p = '}'

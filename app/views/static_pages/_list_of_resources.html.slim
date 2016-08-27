@@ -1,0 +1,16 @@
+h4 List of resources:
+.nav-tabs-custom
+  ul.nav.nav-tabs
+    li.active
+      a href="#creators" data-toggle="tab" aria-expanded="true" Creators
+    li
+      a href="#publishers" data-toggle="tab" aria-expanded="true" Publishers
+    li
+      a href="#comics" data-toggle="tab" aria-expanded="true" Comics
+  .tab-content
+    .tab-pane.active#creators
+      = render 'creators_resource_description'
+    .tab-pane#publishers
+      = render 'publishers_resource_description'
+    .tab-pane#comics
+      = render 'comics_resource_description'

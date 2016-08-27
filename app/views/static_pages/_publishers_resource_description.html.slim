@@ -1,0 +1,33 @@
+h3 Get list of publishers
+p
+  a href='api/v1/publishers' grepcomics.io/api/v1/publishers
+h4 Query params
+table.table.table-bordered
+  thead
+    tr
+      th Param
+      th Required
+      th Description
+  tbody
+    tr
+      td names
+      td false
+      td Filters publishers by names. Query consists of the list of publishers names, separated by commas. Names are case insensitive.
+    tr
+      td colspan=3 example: "grepcomics.io/api/v1/publishers?key=API_KEY&names=dark,marvel,koyama"
+h4 Response example
+blockquote
+  code
+    p = '{'
+    p &emsp;'total': 2,
+    p &emsp;'publishers': [
+    p &emsp;&emsp;{
+    p &emsp;&emsp;&emsp;'name': 'DARK HORSE COMICS',
+    p &emsp;&emsp;&emsp;'totalComics': 11,
+    p &emsp;&emsp;},
+    p &emsp;&emsp;{
+    p &emsp;&emsp;&emsp;'name': 'MARVEL COMICS',
+    p &emsp;&emsp;&emsp;'totalComics': 28,
+    p &emsp;&emsp;},
+    p &emsp;]
+    p = '}'

@@ -1,0 +1,11 @@
+p All of the data can be accessed via JSON API. It is completely free to use, but you must have a key to access it. I haven't implemented any kind of user registration yet, so if you want a key, send me an email at %my email address%.
+h4 How to use it:
+ol
+  li GET http request
+  li Content-Type header should be set as 'application/json'
+  li 'key' query param should be your API key
+  li Make a request to the url beneath, where %resource_name% is the name of the resource that you need. Available resources and their specific query params are listed below.
+p
+  a href='api/v1/%resource_name%' grepcomics.io/api/v1/%resource_name%
+h4 Example request with curl:
+p curl -H "Content-Type: application/json" "grepcomics.io/api/v1/creators?key=API_KEY&some_param=some_value"
