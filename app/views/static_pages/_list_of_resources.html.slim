@@ -7,6 +7,8 @@ h4 List of resources:
       a href="#publishers" data-toggle="tab" aria-expanded="true" Publishers
     li
       a href="#comics" data-toggle="tab" aria-expanded="true" Comics
+    li
+      a href="#weekly_releases" data-toggle="tab" aria-expanded="true" Weekly Releases
   .tab-content
     .tab-pane.active#creators
       = render 'creators_resource_description'
@@ -14,3 +16,5 @@ h4 List of resources:
       = render 'publishers_resource_description'
     .tab-pane#comics
       = render 'comics_resource_description'
+    .tab-pane#weekly_releases
+      = render 'weekly_releases_resource_description'

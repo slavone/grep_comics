@@ -1,6 +1,7 @@
-h3 Get list of comics
+h3 Get list of weekly releases
+p Same as comics, but limited to weekly releases
 p
-  a href='api/v1/comics' grepcomics.io/api/v1/comics
+  a href='api/v1/weekly_releases' grepcomics.io/api/v1/weekly_releases
 h4 Query params
 table.table.table-bordered
   thead
@@ -9,6 +10,14 @@ table.table.table-bordered
       th Required
       th Description
   tbody
+    /date
+    tr
+      td publisher
+      td true
+      td Specifies the week, when the comics were released. Comics come out on wednesday, so specifying the wednesday day will give you the most accurate results. Date should be in YYYY-MM-DD format.
+    tr
+      td colspan=2 Example:
+      td = "grepcomics.io/api/v1/weekly_releases?key=API_KEY&date=2016-08-24"
     /publisher
     tr
       td publisher
@@ -16,7 +25,7 @@ table.table.table-bordered
       td Filters comics by publisher. Query consists of the single complete name of the publisher. Case insensitive.
     tr
       td colspan=2 Example:
-      td = "grepcomics.io/api/v1/comics?key=API_KEY&publisher=dark%20horse%20comics"
+      td = "grepcomics.io/api/v1/weekly_releases?key=API_KEY&publisher=dark%20horse%20comics"
     /title
     tr
       td title
@@ -24,7 +33,7 @@ table.table.table-bordered
       td Filters comics by title. Query consists of the single full or partial title of the comic. Case insensitive.
     tr
       td colspan=2 Example:
-      td = "grepcomics.io/api/v1/comics?key=API_KEY&title=cerebus"
+      td = "grepcomics.io/api/v1/weekly_releases?key=API_KEY&title=cerebus"
     /creators
     tr
       td creators
@@ -32,7 +41,7 @@ table.table.table-bordered
       td Filters comics by creators with any credits. Query consists of the list of creators names, separated by commas. Names are case insensitive.
     tr
       td colspan=2 Example:
-      td = "grepcomics.io/api/v1/comics?key=API_KEY&creators=michael%20deforge,grant,cameron%20stewart"
+      td = "grepcomics.io/api/v1/weekly_releases?key=API_KEY&creators=michael%20deforge,grant,cameron%20stewart"
     /writers
     tr
       td writers
@@ -40,7 +49,7 @@ table.table.table-bordered
       td Filters comics by creators, credited as writers. Query consists of the list of creators names, separated by commas. Names are case insensitive.
     tr
       td colspan=2 Example:
-      td = "grepcomics.io/api/v1/comics?key=API_KEY&writers=michael%20deforge,grant,cameron%20stewart"
+      td = "grepcomics.io/api/v1/weekly_releases?key=API_KEY&writers=michael%20deforge,grant,cameron%20stewart"
     /artists
     tr
       td artists
@@ -48,7 +57,7 @@ table.table.table-bordered
       td Filters comics by creators, credited as artists. Query consists of the list of creators names, separated by commas. Names are case insensitive.
     tr
       td colspan=2 Example:
-      td = "grepcomics.io/api/v1/comics?key=API_KEY&artists=michael%20deforge,grant,cameron%20stewart"
+      td = "grepcomics.io/api/v1/weekly_releases?key=API_KEY&artists=michael%20deforge,grant,cameron%20stewart"
     /cover_artists
     tr
       td cover_artists
@@ -56,15 +65,7 @@ table.table.table-bordered
       td Filters comics by creators, credited as cover artists. Query consists of the list of creators names, separated by commas. Names are case insensitive.
     tr
       td colspan=2 Example:
-      td = "grepcomics.io/api/v1/comics?key=API_KEY&cover_artists=michael%20deforge,grant,cameron%20stewart"
-    /shipping_date
-    tr
-      td shipping_date
-      td false
-      td Filters comics by shipping date. Date should be in YYYY-MM-DD format.
-    tr
-      td colspan=2 Example:
-      td = "grepcomics.io/api/v1/comics?key=API_KEY&shipping_date=2016-08-24"
+      td = "grepcomics.io/api/v1/weekly_releases?key=API_KEY&cover_artists=michael%20deforge,grant,cameron%20stewart"
     /has_variant_covers
     tr
       td has_variant_covers
@@ -72,7 +73,7 @@ table.table.table-bordered
       td Filters by comics that have variant covers if set as true
     tr
       td colspan=2 Example:
-      td = "grepcomics.io/api/v1/comics?key=API_KEY&has_variant_covers=true"
+      td = "grepcomics.io/api/v1/weekly_releases?key=API_KEY&has_variant_covers=true"
     /issue_number
     tr
       td issue_number
@@ -80,7 +81,7 @@ table.table.table-bordered
       td Filters comics by their issue number. Only single issues have issue number.
     tr
       td colspan=2 Example:
-      td = "grepcomics.io/api/v1/comics?key=API_KEY&issue_number=3"
+      td = "grepcomics.io/api/v1/weekly_releases?key=API_KEY&issue_number=3"
     /reprint
     tr
       td reprint
@@ -88,7 +89,7 @@ table.table.table-bordered
       td Filters by comics that are reprints if set as true
     tr
       td colspan=2 Example:
-      td = "grepcomics.io/api/v1/comics?key=API_KEY&reprint=true"
+      td = "grepcomics.io/api/v1/weekly_releases?key=API_KEY&reprint=true"
     /type
     tr
       td type
@@ -99,7 +100,7 @@ table.table.table-bordered
       td single_issue, hardcover, softcover, trade_paperback, graphic_novel
     tr
       td colspan=2 Example:
-      td = "grepcomics.io/api/v1/comics?key=API_KEY&type=graphic_novel"
+      td = "grepcomics.io/api/v1/weekly_releases?key=API_KEY&type=graphic_novel"
 h4 Response example
 blockquote
   code
