@@ -3,8 +3,12 @@ class Api::BaseApiController < ApplicationController
 
   private
 
+  def authorization_params
+    params.permit(:key)
+  end
+
   def authenticate_key!
-    unless params[:key]
+    unless authorization_params[:key]
       render json: { status: 401, message: 'Unauthorized. No key provided' }, status: 401
       return
     end
