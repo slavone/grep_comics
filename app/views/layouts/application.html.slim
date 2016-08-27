@@ -3,6 +3,7 @@ html
   head
     title GrepComics
     = csrf_meta_tags
+    = favicon_link_tag
     = stylesheet_link_tag 'application', media: 'all'
     = javascript_include_tag 'application'
     = render 'layouts/google_analytics' if Rails.env.production?
