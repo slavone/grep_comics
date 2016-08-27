@@ -43,22 +43,26 @@ class ApiQueryBuilder
     creators: ->(query_input) do
       creators = ApiQueryBuilder.sanitize_array query_input
       comics_in = Comic.filtered_by_creators(creators).map(&:id).join(',')
+      comics_in = "0" if comics_in.empty?
       "comics.id IN (#{comics_in})"
     end,
     writers: ->(query_input) do
       creators = ApiQueryBuilder.sanitize_array query_input
-      comics_in = Comic.filtered_by_creators_of_type(creators, :writer)
-      "comics.id IN (#{comics_in.map(&:id).join(',')})"
+      comics_in = Comic.filtered_by_creators_of_type(creators, :writer).map(&:id).join(',')
+      comics_in = "0" if comics_in.empty?
+      "comics.id IN (#{comics_in})"
     end,
     artists: ->(query_input) do
       creators = ApiQueryBuilder.sanitize_array query_input
-      comics_in = Comic.filtered_by_creators_of_type(creators, :artist)
-      "comics.id IN (#{comics_in.map(&:id).join(',')})"
+      comics_in = Comic.filtered_by_creators_of_type(creators, :artist).map(&:id).join(',')
+      comics_in = "0" if comics_in.empty?
+      "comics.id IN (#{comics_in})"
     end,
     cover_artists: ->(query_input) do
       creators = ApiQueryBuilder.sanitize_array query_input
-      comics_in = Comic.filtered_by_creators_of_type(creators, :cover_artist)
-      "comics.id IN (#{comics_in.map(&:id).join(',')})"
+      comics_in = Comic.filtered_by_creators_of_type(creators, :cover_artist).map(&:id).join(',')
+      comics_in = "0" if comics_in.empty?
+      "comics.id IN (#{comics_in})"
     end,
     shipping_date: ->(query_input) do
       if m = query_input.match(DATE_SANITIZER)

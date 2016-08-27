@@ -49,9 +49,9 @@ class Comic < ApplicationRecord
   class << self
     def build_creators_query(creators)
       if creators.kind_of? String
-        "'#{creators}'"
+        "#{creators}"
       else
-        creators.map { |c| "'#{c}'"}.join(',')
+        creators.map { |c| "#{c}"}.join('|')
       end
     end
 
@@ -66,7 +66,7 @@ class Comic < ApplicationRecord
                 SELECT id
                 FROM creators
                 WHERE
-                name IN (#{creators_query})
+                name ~* '(#{creators_query})'
                 )
                 SELECT DISTINCT comics.*
                 FROM comics
@@ -92,7 +92,7 @@ class Comic < ApplicationRecord
                 SELECT id
                 FROM creators
                 WHERE
-                name IN (#{creators_query})
+                name ~* '(#{creators_query})'
                 )
                 SELECT DISTINCT comics.*
                 FROM comics
