@@ -1,4 +1,6 @@
 class DBSaver
+  IGNORED_PUBLISHERS = ['DYNAMIC FORCES'].freeze
+
   def initialize(weekly_list_id)
     @weekly_list_id = weekly_list_id
     @logger = Logger.new "#{Rails.root}/log/db_saver.log"
@@ -6,13 +8,8 @@ class DBSaver
 
   #TODO think about what to do with TBD. maybe add another column which flags them for retry later?
   def persist_to_db(comic_hash)
-    log '--------------------------------------------'
-    log "Trying to persist comic #{comic_hash.inspect}"
-    if Comic.find_by diamond_code: comic_hash[:diamond_id]
-      log "Comic with diamond_code #{comic_hash[:diamond_id]} already exists"
-    else
-      save_new_comic comic_hash
-    end
+    log "----- Trying to persist comic #{comic_hash.inspect} -----"
+    save_new_comic comic_hash if valid_comic? comic_hash
   end
 
   def find_and_update_comic(comic_hash)
@@ -28,6 +25,18 @@ class DBSaver
   end
 
   private
+
+  def valid_comic?(comic_hash)
+    if IGNORED_PUBLISHERS.include? comic_hash[:publisher]
+      log "Comic is published by #{comic_hash[:publisher]}, which we ignore"
+      return false
+    end
+    if Comic.find_by diamond_code: comic_hash[:diamond_id]
+      log "Comic with diamond_code #{comic_hash[:diamond_id]} already exists"
+      return false
+    end
+    true
+  end
 
   def log(message, msg_type = :info)
     @logger.send(msg_type, message) unless Rails.env == 'test'
