@@ -7,6 +7,9 @@ html
     = stylesheet_link_tag 'application', media: 'all'
     = javascript_include_tag 'application'
     = render 'layouts/google_analytics' if Rails.env.production?
+    meta name='description' content="An easy way to browse weekly comics releases with the focus on the creators."
+    meta name='keywords' content="comics, weekly releases, diamond comics, pull list, filters,
+    search, graphic novels, trade paperbacks, wednesday comics, wednesday releases, api"
 
   body.fixed.skin-black.sidebar-collapse
     .wrapper
