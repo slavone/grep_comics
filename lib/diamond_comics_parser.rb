@@ -4,7 +4,7 @@ class DiamondComicsParser
   CATALOG = 'http://www.previewsworld.com/Catalog/'.freeze
   ROOT_URL = 'http://www.previewsworld.com'.freeze
 
-  NO_IMAGE_AVAILABLE_PNG_MD5 = 'ce0bf4477ccfac6ce8147649949f840b'
+  NO_IMAGE_AVAILABLE_PNG_MD5 = 'ce0bf4477ccfac6ce8147649949f840b'.freeze
 
   def get_page(page_url)
     url = URI.parse page_url
@@ -12,7 +12,7 @@ class DiamondComicsParser
   end
 
   def parse_wednesday_date(page)
-    match = page.match /(?<month>\d{1,2})\/(?<day>\d{1,2})\/(?<year>\d{4})/ 
+    match = page.match /(?<month>\d{1,2})\/(?<day>\d{1,2})\/(?<year>\d{4})/
     return Date.new match[:year].to_i, match[:month].to_i, match[:day].to_i if match
     ''
   end
@@ -28,7 +28,7 @@ class DiamondComicsParser
     when :comics
       break_flag = false
       stop_after = "COMICS & GRAPHIC NOVELS" + "\r\n"
-      
+
       page.each_line do |line|
         break if break_flag && line.match(/^[A-Z ]+\r\n/)
         break_flag = true if line == stop_after
@@ -117,10 +117,10 @@ class DiamondComicsParser
     add_info = {}
     add_info[:variant_cover] = true if description.match /\b(?:CVR)\b/
     if match = description.match(/(?<volume>BOOK|VOL)\s(?<number>\d{1,2})/)
-      add_info[match[:volume].downcase.to_sym] = match[:number] 
+      add_info[match[:volume].downcase.to_sym] = match[:number]
     end
     if match = description.match(/(?<number>\d+)[A-Z]{2}\sPTG/)
-      add_info[:reprint_number] = match[:number] 
+      add_info[:reprint_number] = match[:number]
     end
     add_info[:mature_rating] = true if description.match(/\(MR\)/)
     add_info
@@ -134,7 +134,7 @@ class DiamondComicsParser
     desc = get_description(noko_nodes)
     build_additional_info desc
   end
-  
+
   def parse_item_type(noko_nodes)
     desc = get_description(noko_nodes)
     identify_item_type desc
@@ -177,8 +177,8 @@ class DiamondComicsParser
 
   def build_creators_hash(writers = [], artists = [], cover_artists = [])
     {
-      writers: filter_creators_string(writers), 
-      artists: filter_creators_string(artists), 
+      writers: filter_creators_string(writers),
+      artists: filter_creators_string(artists),
       cover_artists: filter_creators_string(cover_artists)
     }
   end
@@ -235,5 +235,5 @@ class DiamondComicsParser
     return Date.parse(matched[:date]) if matched
     ''
   end
-  
+
 end

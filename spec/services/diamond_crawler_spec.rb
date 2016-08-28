@@ -4,9 +4,9 @@ RSpec.describe DiamondCrawler do
   let(:crawler) { DiamondCrawler.new }
   let(:test_page) do
     'New Releases For 8/17/2016
-    
+
     DARK HORSE COMICS
-    
+
     APR160059 ALIENS DEFIANCE #3  $3.99
     APR160124 BIRD BOY TP VOL 02 LIMINAL WOOD $9.99
     JUN160036 BLACK HAMMER #2 $3.99
@@ -35,7 +35,7 @@ RSpec.describe DiamondCrawler do
     end
 
     it 'creates new' do
-      expect(crawler.send(:set_weekly_list!, 
+      expect(crawler.send(:set_weekly_list!,
                           @date,
                           test_page)).to eq(WeeklyList.find_by(wednesday_date: @date))
     end
@@ -51,7 +51,7 @@ RSpec.describe DiamondCrawler do
       expect {
         crawler.send(:set_weekly_list!, @date, test_page)
       }.not_to change { WeeklyList.count }
-      expect(crawler.send(:set_weekly_list!, 
+      expect(crawler.send(:set_weekly_list!,
                           @date,
                           test_page)).to eq(nil)
     end

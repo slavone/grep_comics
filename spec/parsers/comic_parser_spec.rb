@@ -1,4 +1,6 @@
-require "rails_helper"
+require './lib/diamond_comics_parser.rb'
+require 'nokogiri'
+require 'date'
 
 RSpec.describe DiamondComicsParser do
   let(:parser) { DiamondComicsParser.new }
@@ -82,13 +84,13 @@ RSpec.describe DiamondComicsParser do
                                                                vol: '03',
                                                                reprint_number: '2',
                                                                mature_rating: true
-                                                               
+
         })
       end
 
       context 'identifies types' do
         it 'hardcover' do
-          descriptions = ['ART OF MIRRORS EDGE CATALYST HC', 
+          descriptions = ['ART OF MIRRORS EDGE CATALYST HC',
                           'SUPERMAN WONDER WOMAN HC VOL 04 DARK TRUTH']
           descriptions.each do |desc|
             expect(parser.identify_item_type(desc)).to eq 'hardcover'
@@ -97,15 +99,15 @@ RSpec.describe DiamondComicsParser do
 
 
         it 'softcover' do
-          descriptions = ['WARHAMMER DEATH OF THE OLD WORLD SC', 
+          descriptions = ['WARHAMMER DEATH OF THE OLD WORLD SC',
                           'SOME COMIC SC VOL 1']
           descriptions.each do |desc|
             expect(parser.identify_item_type(desc)).to eq 'softcover'
           end
         end
-        
+
         it 'single_issue' do
-          descriptions = ['ACTION COMICS #957', 
+          descriptions = ['ACTION COMICS #957',
                           'INJECTION #10 CVR A SHALVEY & BELLAIRE (MR)',
                           'BIG TROUBLE IN LITTLE CHINA #25 (NOTE PRICE)']
           descriptions.each do |desc|
@@ -114,7 +116,7 @@ RSpec.describe DiamondComicsParser do
         end
 
         it 'trade_paperback' do
-          descriptions = ['HERCULES TP VOL 01 STILL GOING STRONG', 
+          descriptions = ['HERCULES TP VOL 01 STILL GOING STRONG',
                           'NEW LONE WOLF AND CUB TP VOL 09 (MR)',
                           'DANGER GIRL PERMISSION TO THRILL COLORING BOOK TP']
           descriptions.each do |desc|
@@ -123,7 +125,7 @@ RSpec.describe DiamondComicsParser do
         end
 
         it 'graphic_novel' do
-          descriptions = ['WARCRAFT BONDS OF BROTHERHOOD OGN', 
+          descriptions = ['WARCRAFT BONDS OF BROTHERHOOD OGN',
                           'DEADBEAT GN',
                           'THE UNIQUES GN VOL 01 COME TOGETHER']
           descriptions.each do |desc|
@@ -132,7 +134,7 @@ RSpec.describe DiamondComicsParser do
         end
 
         it 'merch and other stuff' do
-          descriptions = ['HALO 5 GUARDIANS BEST OF AF', 
+          descriptions = ['HALO 5 GUARDIANS BEST OF AF',
                           'BATMAN BLACK & WHITE STATUE DAVE MAZZUCCHELLI 2ND ED',
                           'AOD NECRONOMICON PX ZIP HOODIE XXL',
                           'CIVIL WAR II #1 BY DJURDJEVIC POSTER']
@@ -165,56 +167,56 @@ RSpec.describe DiamondComicsParser do
       it 'when (W) (A) (CA)' do
         div = "<div #{creators_class}>(W) Mike Mignola, Scott Allie (A) Sebastian Fiumara (CA) Frank Quitely</div>"
         @noko_doc = Nokogiri::HTML(div)
-        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Mike Mignola', 'Scott Allie'], 
-                                                         artists: ['Sebastian Fiumara'], 
+        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Mike Mignola', 'Scott Allie'],
+                                                         artists: ['Sebastian Fiumara'],
                                                          cover_artists: ['Frank Quitely'] })
       end
 
       it 'when (W/A) and (CA)' do
         div = "<div #{creators_class}>(W/A) Mike Mignola, Scott Allie  (CA) Frank Quitely</div>"
         @noko_doc = Nokogiri::HTML(div)
-        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Mike Mignola', 'Scott Allie'], 
-                                                         artists: ['Mike Mignola', 'Scott Allie'], 
+        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Mike Mignola', 'Scott Allie'],
+                                                         artists: ['Mike Mignola', 'Scott Allie'],
                                                          cover_artists: ['Frank Quitely'] })
       end
 
       it 'when (W/A/CA)' do
         div = "<div #{creators_class}>(W/A/CA) Mike Mignola, Scott Allie, Frank Quitely</div>"
         @noko_doc = Nokogiri::HTML(div)
-        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Mike Mignola', 'Scott Allie', 'Frank Quitely'], 
-                                                         artists: ['Mike Mignola', 'Scott Allie', 'Frank Quitely'], 
+        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Mike Mignola', 'Scott Allie', 'Frank Quitely'],
+                                                         artists: ['Mike Mignola', 'Scott Allie', 'Frank Quitely'],
                                                          cover_artists: ['Mike Mignola', 'Scott Allie', 'Frank Quitely'] })
       end
 
       it 'when (W) and (A/CA)' do
         #piece of shits changed to second names only for writers
-        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Mike Mignola', 'Scott Allie'], 
-        #expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Mignola', 'Allie'], 
-                                                         artists: ['Sebastian Fiumara'], 
+        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Mike Mignola', 'Scott Allie'],
+        #expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Mignola', 'Allie'],
+                                                         artists: ['Sebastian Fiumara'],
                                                          cover_artists: ['Sebastian Fiumara'] })
       end
 
       it 'when unexpected symbols in creator names' do
         div = "<div #{creators_class}>(W) Peter J. Tomasi (A) Doug Mahnke & Various (CA) Doug Mahnke, Mœbius, Kevin O'Neil</div>"
         @noko_doc = Nokogiri::HTML(div)
-        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Peter J. Tomasi'], 
-                                                         artists: ['Doug Mahnke'], 
+        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Peter J. Tomasi'],
+                                                         artists: ['Doug Mahnke'],
                                                          cover_artists: ['Doug Mahnke', 'Mœbius', "Kevin O'Neil"] })
       end
 
       it 'when there is no writer' do
         div = "<div #{creators_class}>(A/CA) J. Scott Campbell</div>"
         @noko_doc = Nokogiri::HTML(div)
-        expect(parser.parse_creators(@noko_doc)).to eq({ writers: [], 
-                                                         artists: ['J. Scott Campbell'], 
+        expect(parser.parse_creators(@noko_doc)).to eq({ writers: [],
+                                                         artists: ['J. Scott Campbell'],
                                                          cover_artists: ['J. Scott Campbell'] })
       end
 
       it 'only writer' do
         div = "<div #{creators_class}>(W) Grant Morrison</div>"
         @noko_doc = Nokogiri::HTML(div)
-        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Grant Morrison'], 
-                                                         artists: [], 
+        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Grant Morrison'],
+                                                         artists: [],
                                                          cover_artists: [] })
       end
 
@@ -223,8 +225,8 @@ RSpec.describe DiamondComicsParser do
                         (W)                                Vigneault
                                                     (CA) MacKenzie Schubert                            (A/CA) Francois                       Vigneault        </div>"
         @noko_doc = Nokogiri::HTML(div)
-        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Vigneault'], 
-                                                         artists: ['Francois Vigneault'], 
+        expect(parser.parse_creators(@noko_doc)).to eq({ writers: ['Vigneault'],
+                                                         artists: ['Francois Vigneault'],
                                                          cover_artists: ['MacKenzie Schubert', 'Francois Vigneault'] })
       end
 
@@ -250,6 +252,7 @@ RSpec.describe DiamondComicsParser do
   end
 
   it 'builds correct hash from parsed page' do
+    allow(parser).to receive(:cover_available?) { true } #stub out http
     expect(parser.parse_comic_info(comic_page)).to eq({ title: 'ABE SAPIEN',
                                                         issue_number: '34',
                                                         publisher: 'DARK HORSE COMICS',
