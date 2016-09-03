@@ -18,5 +18,7 @@ section.content
             dd = @comic.publisher.name
             dt Release date
             dd = @comic.shipping_date
+            dt Diamond code
+            dd = link_to @comic.diamond_code, "http://www.previewsworld.com/Catalog/#{@comic.diamond_code}"
             dt Synopsis
             dd = @comic.preview

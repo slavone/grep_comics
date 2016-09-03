@@ -11,7 +11,6 @@ section.content#weekday data-week=@weekly_list&.wednesday_date
           tr
             th Cover
             th Synopsis
-            th Diamond code
             th Shipping date
             th Title
             th#editions Edition type
@@ -26,7 +25,6 @@ section.content#weekday data-week=@weekly_list&.wednesday_date
                 = link_to image_tag(comic.cover_thumbnail&.url, class: 'img-responsive', size: "215x330"), comic.cover_image, target: '_blank' if comic.cover_thumbnail
               td
                 i.fa.fa-plus-circle.fa-2x#toggle_preview
-              td = link_to comic.diamond_code, "http://www.previewsworld.com/Catalog/#{comic.diamond_code}"
               td = comic.shipping_date
               td
                 = link_to comic.humanized_title, comic_path(comic)

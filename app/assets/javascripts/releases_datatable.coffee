@@ -17,7 +17,6 @@ $(document).on 'ready', ->
       { orderable: true },
       { orderable: true },
       { orderable: true },
-      { orderable: true },
       { orderable: true }
     ]
     lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "All"]]
