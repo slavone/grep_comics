@@ -5,7 +5,7 @@ section.content
     .box-body
       .row
         .col-xs-2
-          img.img-responsive src=@comic.cover_image
+          = link_to image_tag(@comic.cover_thumbnail&.url, class: 'img-responsive'), @comic.cover_image, target: '_blank'
         .col-xs-10
           dl.dl-horizontal
             dt Writers
