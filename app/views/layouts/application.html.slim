@@ -15,6 +15,6 @@ html
     .wrapper
       = render 'layouts/header'
       = yield :sidebar
-      .content-wrapper
+      .content-wrapper class="#{'landing-background' if action_name == 'landing'}"
         = yield
       = render 'layouts/footer'

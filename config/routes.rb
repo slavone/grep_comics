@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root 'weekly_lists#new_releases'
+  root 'static_pages#landing'
   get 'new_releases', to: 'weekly_lists#new_releases'
   get 'releases/:date', to: 'weekly_lists#show'
   resources :creators, only: [:index, :show]

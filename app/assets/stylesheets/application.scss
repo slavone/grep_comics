@@ -25,6 +25,26 @@ table thead tr, tbody tr {
   }
 }
 
+.landing-wrapper {
+  color: white;
+  padding-bottom: 50px;
+  h1 {
+    font-size: 5rem;
+  }
+}
+
+.landing-background {
+  background: linear-gradient(rgba(0, 0, 0, 0.5),
+    rgba(0, 0, 0, 0.5)),
+    image_url('landing.jpg') repeat center center fixed;
+  -webkit-background-size: 60%;
+  -moz-background-size: 60%;
+  -o-background-size: 60%;
+  background-size: 60%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .filterOn {
   background-color: #337ab7;
