@@ -44,15 +44,15 @@ class WeeklyList < ApplicationRecord
                         WHERE
                         id IN (
                           SELECT writer_credits.creator_id
-                          FROM writer_credits JOIN weekly_comics 
+                          FROM writer_credits JOIN weekly_comics
                           ON writer_credits.comic_id = weekly_comics.id
                           UNION ALL
                           SELECT artist_credits.creator_id
-                          FROM artist_credits JOIN weekly_comics 
+                          FROM artist_credits JOIN weekly_comics
                           ON artist_credits.comic_id = weekly_comics.id
                           UNION ALL
                           SELECT cover_artist_credits.creator_id
-                          FROM cover_artist_credits JOIN weekly_comics 
+                          FROM cover_artist_credits JOIN weekly_comics
                           ON cover_artist_credits.comic_id = weekly_comics.id
                         )
                         ORDER BY name")

@@ -83,7 +83,8 @@ class Comic < ApplicationRecord
                   SELECT cover_artist_credits.comic_id
                   FROM cover_artist_credits JOIN filtered_creators
                   ON cover_artist_credits.creator_id = filtered_creators.id
-                )"
+                )
+                ORDER BY title"
   end
 
   scope :filtered_by_creators_of_type, ->(creators, type) do
@@ -101,7 +102,8 @@ class Comic < ApplicationRecord
                   SELECT #{type}_credits.comic_id
                   FROM #{type}_credits JOIN filtered_creators
                   ON #{type}_credits.creator_id = filtered_creators.id
-                )"
+                )
+                ORDER BY title"
   end
 
   def humanized_title
