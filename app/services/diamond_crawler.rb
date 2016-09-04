@@ -31,6 +31,9 @@ class DiamondCrawler
   end
 
   def retry_for_updates(weekly_list)
+    log '---------------------------------'
+    log 'DiamondCrawler retrying for updates started'
+
     weekly_list.comics_with_no_covers.each do |comic|
       ComicScraper.perform_async :update, comic.diamond_code, weekly_list.id
     end
