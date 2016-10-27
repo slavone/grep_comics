@@ -9,11 +9,19 @@
 #
 
 class Creator < ApplicationRecord
-  has_many :writer_credits
+  #has_many :writer_credits
+  #has_many :comics_as_writer, through: :writer_credits, source: :comic
+  #has_many :artist_credits
+  #has_many :comics_as_artist, through: :artist_credits, source: :comic
+  #has_many :cover_artist_credits
+  #has_many :comics_as_cover_artist, through: :cover_artist_credits, source: :comic
+
+  has_many :creator_credits
+  has_many :writer_credits, -> { where(credited_as: :writer) }, class_name: 'CreatorCredit'
+  has_many :artist_credits, -> { where(credited_as: :artist) }, class_name: 'CreatorCredit'
+  has_many :cover_artist_credits, -> { where(credited_as: :cover_artist) }, class_name: 'CreatorCredit'
   has_many :comics_as_writer, through: :writer_credits, source: :comic
-  has_many :artist_credits
   has_many :comics_as_artist, through: :artist_credits, source: :comic
-  has_many :cover_artist_credits
   has_many :comics_as_cover_artist, through: :cover_artist_credits, source: :comic
 
   def worked_for_publishers

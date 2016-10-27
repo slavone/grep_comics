@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160821165255) do
+ActiveRecord::Schema.define(version: 20161027152719) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -63,6 +63,9 @@ ActiveRecord::Schema.define(version: 20160821165255) do
     t.index ["comic_id"], name: "index_cover_artist_credits_on_comic_id", using: :btree
     t.index ["creator_id"], name: "index_cover_artist_credits_on_creator_id", using: :btree
   end
+
+# Could not dump table "creator_credits" because of following StandardError
+#   Unknown type 'creator_type' for column 'credited_as'
 
   create_table "creators", force: :cascade do |t|
     t.string   "name"

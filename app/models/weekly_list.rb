@@ -35,6 +35,12 @@ class WeeklyList < ApplicationRecord
                .order('publishers.name', :title, :issue_number)
   end
 
+  #def fetch_comics_new
+  #  self.comics.eager_load(:publisher)
+  #             .preload(:writers_new, :artists_new, :cover_artists_new)
+  #             .order('publishers.name', :title, :issue_number)
+  #end
+
   def all_creators
     Creator.find_by_sql("WITH weekly_comics AS (
                         SELECT id FROM comics WHERE weekly_list_id = #{self.id}

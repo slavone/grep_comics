@@ -29,11 +29,20 @@
 class Comic < ApplicationRecord
   belongs_to :publisher, optional: true
   belongs_to :weekly_list, optional: true
-  has_many :writer_credits
+
+  #has_many :writer_credits
+  #has_many :writers, -> { order(:name) }, through: :writer_credits, source: :creator
+  #has_many :artist_credits
+  #has_many :artists, -> { order(:name) }, through: :artist_credits, source: :creator
+  #has_many :cover_artist_credits
+  #has_many :cover_artists, -> { order(:name) }, through: :cover_artist_credits, source: :creator
+
+  has_many :creator_credits
+  has_many :writer_credits, -> { where(credited_as: :writer) }, class_name: 'CreatorCredit'
+  has_many :artist_credits, -> { where(credited_as: :artist) }, class_name: 'CreatorCredit'
+  has_many :cover_artist_credits, -> { where(credited_as: :cover_artist) }, class_name: 'CreatorCredit'
   has_many :writers, -> { order(:name) }, through: :writer_credits, source: :creator
-  has_many :artist_credits
   has_many :artists, -> { order(:name) }, through: :artist_credits, source: :creator
-  has_many :cover_artist_credits
   has_many :cover_artists, -> { order(:name) }, through: :cover_artist_credits, source: :creator
 
   mount_uploader :cover_thumbnail, CoverUploader
@@ -118,4 +127,13 @@ class Comic < ApplicationRecord
     ITEM_TYPES_MAPPING[item_type]
   end
 
+  def migrate_to_creator_credits
+    [:writer_credits, :artist_credits, :cover_artist_credits].each do |creator_type|
+      self.send(creator_type).each do |old_credit|
+        self.creator_credits.create creator_id: old_credit.creator_id,
+                                    comic_id: old_credit.comic_id,
+                                    credited_as: creator_type.to_s.gsub(/_credits/,'')
+      end
+    end
+  end
 end
