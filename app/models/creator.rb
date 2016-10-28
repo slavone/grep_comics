@@ -17,9 +17,9 @@ class Creator < ApplicationRecord
   #has_many :comics_as_cover_artist, through: :cover_artist_credits, source: :comic
 
   has_many :creator_credits
-  has_many :writer_credits, -> { where(credited_as: :writer) }, class_name: 'CreatorCredit'
-  has_many :artist_credits, -> { where(credited_as: :artist) }, class_name: 'CreatorCredit'
-  has_many :cover_artist_credits, -> { where(credited_as: :cover_artist) }, class_name: 'CreatorCredit'
+  has_many :writer_credits, -> { where(credited_as: :writer) }, class_name: 'CreatorCredit', inverse_of: :creator
+  has_many :artist_credits, -> { where(credited_as: :artist) }, class_name: 'CreatorCredit', inverse_of: :creator
+  has_many :cover_artist_credits, -> { where(credited_as: :cover_artist) }, class_name: 'CreatorCredit', inverse_of: :creator
   has_many :comics_as_writer, through: :writer_credits, source: :comic
   has_many :comics_as_artist, through: :artist_credits, source: :comic
   has_many :comics_as_cover_artist, through: :cover_artist_credits, source: :comic

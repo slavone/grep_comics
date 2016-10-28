@@ -38,9 +38,9 @@ class Comic < ApplicationRecord
   #has_many :cover_artists, -> { order(:name) }, through: :cover_artist_credits, source: :creator
 
   has_many :creator_credits
-  has_many :writer_credits, -> { where(credited_as: :writer) }, class_name: 'CreatorCredit'
-  has_many :artist_credits, -> { where(credited_as: :artist) }, class_name: 'CreatorCredit'
-  has_many :cover_artist_credits, -> { where(credited_as: :cover_artist) }, class_name: 'CreatorCredit'
+  has_many :writer_credits, -> { where(credited_as: :writer) }, class_name: 'CreatorCredit', inverse_of: :comic
+  has_many :artist_credits, -> { where(credited_as: :artist) }, class_name: 'CreatorCredit', inverse_of: :comic
+  has_many :cover_artist_credits, -> { where(credited_as: :cover_artist) }, class_name: 'CreatorCredit', inverse_of: :comic
   has_many :writers, -> { order(:name) }, through: :writer_credits, source: :creator
   has_many :artists, -> { order(:name) }, through: :artist_credits, source: :creator
   has_many :cover_artists, -> { order(:name) }, through: :cover_artist_credits, source: :creator
