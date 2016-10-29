@@ -16,9 +16,11 @@ class Creator < ApplicationRecord
 
   def worked_for_publishers
     Publisher.find_by_sql "SELECT DISTINCT publishers.*
-                          FROM comics
-                          JOIN publishers ON comics.publisher_id = publishers.id
-                          JOIN creator_credits ON creator_credits.creator_id = #{self.id}
+                          FROM publishers
+                          JOIN comics
+                          ON publishers.id = comics.publisher_id
+                          JOIN creator_credits
+                          ON creator_credits.creator_id = #{self.id} AND creator_credits.comic_id = comics.id
                           ORDER BY publishers.name"
   end
 end

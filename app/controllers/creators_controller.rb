@@ -11,7 +11,8 @@ class CreatorsController < ApplicationController
     @creator = Creator.preload(comics_as_writer: :publisher,
                                comics_as_artist: :publisher,
                                comics_as_cover_artist: :publisher
-                              ).find params[:id]
+                              )
+                      .find params[:id]
     @publishers = @creator.worked_for_publishers
   end
 end

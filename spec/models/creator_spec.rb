@@ -31,7 +31,10 @@ RSpec.describe Creator, :type => :model do
         publisher { Fabricate(:publisher, name: "publisher_#{i}") }
       end
     end
-   expect(creator.worked_for_publishers.map &:name).to eq( %w( publisher_1 publisher_2 publisher_3) )
+    Fabricate(:publisher, name: 'not in the list')
+    expected_publishers = creator.worked_for_publishers.map &:name
+    expect(expected_publishers).to eq( %w( publisher_1 publisher_2 publisher_3) )
+    expect(expected_publishers).not_to include( 'not in the list' )
   end
 
 end
