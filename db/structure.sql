@@ -89,38 +89,6 @@ CREATE TABLE ar_internal_metadata (
 
 
 --
--- Name: artist_credits; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE artist_credits (
-    id integer NOT NULL,
-    creator_id integer,
-    comic_id integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: artist_credits_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE artist_credits_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: artist_credits_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE artist_credits_id_seq OWNED BY artist_credits.id;
-
-
---
 -- Name: comics; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -162,38 +130,6 @@ CREATE SEQUENCE comics_id_seq
 --
 
 ALTER SEQUENCE comics_id_seq OWNED BY comics.id;
-
-
---
--- Name: cover_artist_credits; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE cover_artist_credits (
-    id integer NOT NULL,
-    creator_id integer,
-    comic_id integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: cover_artist_credits_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE cover_artist_credits_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: cover_artist_credits_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE cover_artist_credits_id_seq OWNED BY cover_artist_credits.id;
 
 
 --
@@ -333,38 +269,6 @@ ALTER SEQUENCE weekly_lists_id_seq OWNED BY weekly_lists.id;
 
 
 --
--- Name: writer_credits; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE writer_credits (
-    id integer NOT NULL,
-    creator_id integer,
-    comic_id integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: writer_credits_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE writer_credits_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: writer_credits_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE writer_credits_id_seq OWNED BY writer_credits.id;
-
-
---
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -375,21 +279,7 @@ ALTER TABLE ONLY api_keys ALTER COLUMN id SET DEFAULT nextval('api_keys_id_seq':
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY artist_credits ALTER COLUMN id SET DEFAULT nextval('artist_credits_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY comics ALTER COLUMN id SET DEFAULT nextval('comics_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY cover_artist_credits ALTER COLUMN id SET DEFAULT nextval('cover_artist_credits_id_seq'::regclass);
 
 
 --
@@ -421,13 +311,6 @@ ALTER TABLE ONLY weekly_lists ALTER COLUMN id SET DEFAULT nextval('weekly_lists_
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY writer_credits ALTER COLUMN id SET DEFAULT nextval('writer_credits_id_seq'::regclass);
-
-
---
 -- Name: api_keys_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -444,27 +327,11 @@ ALTER TABLE ONLY ar_internal_metadata
 
 
 --
--- Name: artist_credits_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY artist_credits
-    ADD CONSTRAINT artist_credits_pkey PRIMARY KEY (id);
-
-
---
 -- Name: comics_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY comics
     ADD CONSTRAINT comics_pkey PRIMARY KEY (id);
-
-
---
--- Name: cover_artist_credits_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY cover_artist_credits
-    ADD CONSTRAINT cover_artist_credits_pkey PRIMARY KEY (id);
 
 
 --
@@ -508,28 +375,6 @@ ALTER TABLE ONLY weekly_lists
 
 
 --
--- Name: writer_credits_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY writer_credits
-    ADD CONSTRAINT writer_credits_pkey PRIMARY KEY (id);
-
-
---
--- Name: index_artist_credits_on_comic_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_artist_credits_on_comic_id ON artist_credits USING btree (comic_id);
-
-
---
--- Name: index_artist_credits_on_creator_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_artist_credits_on_creator_id ON artist_credits USING btree (creator_id);
-
-
---
 -- Name: index_comics_on_diamond_code; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -562,20 +407,6 @@ CREATE INDEX index_comics_on_title ON comics USING btree (title);
 --
 
 CREATE INDEX index_comics_on_weekly_list_id ON comics USING btree (weekly_list_id);
-
-
---
--- Name: index_cover_artist_credits_on_comic_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_cover_artist_credits_on_comic_id ON cover_artist_credits USING btree (comic_id);
-
-
---
--- Name: index_cover_artist_credits_on_creator_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_cover_artist_credits_on_creator_id ON cover_artist_credits USING btree (creator_id);
 
 
 --
@@ -621,36 +452,6 @@ CREATE INDEX index_weekly_lists_on_wednesday_date ON weekly_lists USING btree (w
 
 
 --
--- Name: index_writer_credits_on_comic_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_writer_credits_on_comic_id ON writer_credits USING btree (comic_id);
-
-
---
--- Name: index_writer_credits_on_creator_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_writer_credits_on_creator_id ON writer_credits USING btree (creator_id);
-
-
---
--- Name: fk_rails_239a242689; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY artist_credits
-    ADD CONSTRAINT fk_rails_239a242689 FOREIGN KEY (creator_id) REFERENCES creators(id);
-
-
---
--- Name: fk_rails_3a1f2eaf5a; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY cover_artist_credits
-    ADD CONSTRAINT fk_rails_3a1f2eaf5a FOREIGN KEY (comic_id) REFERENCES comics(id);
-
-
---
 -- Name: fk_rails_4c749ccbd2; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -672,22 +473,6 @@ ALTER TABLE ONLY creator_credits
 
 ALTER TABLE ONLY comics
     ADD CONSTRAINT fk_rails_812b74135e FOREIGN KEY (weekly_list_id) REFERENCES weekly_lists(id);
-
-
---
--- Name: fk_rails_c88ce77b6a; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY artist_credits
-    ADD CONSTRAINT fk_rails_c88ce77b6a FOREIGN KEY (comic_id) REFERENCES comics(id);
-
-
---
--- Name: fk_rails_d036e92763; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY cover_artist_credits
-    ADD CONSTRAINT fk_rails_d036e92763 FOREIGN KEY (creator_id) REFERENCES creators(id);
 
 
 --

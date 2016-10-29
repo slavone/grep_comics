@@ -22,15 +22,6 @@ ActiveRecord::Schema.define(version: 20161027152719) do
     t.datetime "updated_at",             null: false
   end
 
-  create_table "artist_credits", force: :cascade do |t|
-    t.integer  "creator_id"
-    t.integer  "comic_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["comic_id"], name: "index_artist_credits_on_comic_id", using: :btree
-    t.index ["creator_id"], name: "index_artist_credits_on_creator_id", using: :btree
-  end
-
   create_table "comics", force: :cascade do |t|
     t.string   "diamond_code"
     t.string   "title"
@@ -53,15 +44,6 @@ ActiveRecord::Schema.define(version: 20161027152719) do
     t.index ["shipping_date"], name: "index_comics_on_shipping_date", using: :btree
     t.index ["title"], name: "index_comics_on_title", using: :btree
     t.index ["weekly_list_id"], name: "index_comics_on_weekly_list_id", using: :btree
-  end
-
-  create_table "cover_artist_credits", force: :cascade do |t|
-    t.integer  "creator_id"
-    t.integer  "comic_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["comic_id"], name: "index_cover_artist_credits_on_comic_id", using: :btree
-    t.index ["creator_id"], name: "index_cover_artist_credits_on_creator_id", using: :btree
   end
 
 # Could not dump table "creator_credits" because of following StandardError
@@ -89,20 +71,7 @@ ActiveRecord::Schema.define(version: 20161027152719) do
     t.index ["wednesday_date"], name: "index_weekly_lists_on_wednesday_date", using: :btree
   end
 
-  create_table "writer_credits", force: :cascade do |t|
-    t.integer  "creator_id"
-    t.integer  "comic_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["comic_id"], name: "index_writer_credits_on_comic_id", using: :btree
-    t.index ["creator_id"], name: "index_writer_credits_on_creator_id", using: :btree
-  end
-
-  add_foreign_key "artist_credits", "comics"
-  add_foreign_key "artist_credits", "creators"
   add_foreign_key "comics", "publishers"
   add_foreign_key "comics", "weekly_lists"
-  add_foreign_key "cover_artist_credits", "comics"
-  add_foreign_key "cover_artist_credits", "creators"
   add_foreign_key "creator_credits", "comics"
 end

@@ -8,6 +8,11 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
+# Foreign Keys
+#
+#  fk_rails_1327a9360d  (comic_id => comics.id)
+#  fk_rails_af086b60d2  (creator_id => creators.id)
+#
 
 class WriterCredit < ApplicationRecord
   belongs_to :comic
