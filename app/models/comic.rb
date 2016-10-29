@@ -30,13 +30,6 @@ class Comic < ApplicationRecord
   belongs_to :publisher, optional: true
   belongs_to :weekly_list, optional: true
 
-  #has_many :writer_credits
-  #has_many :writers, -> { order(:name) }, through: :writer_credits, source: :creator
-  #has_many :artist_credits
-  #has_many :artists, -> { order(:name) }, through: :artist_credits, source: :creator
-  #has_many :cover_artist_credits
-  #has_many :cover_artists, -> { order(:name) }, through: :cover_artist_credits, source: :creator
-
   has_many :creator_credits
   has_many :writer_credits, -> { where(credited_as: :writer) }, class_name: 'CreatorCredit', inverse_of: :comic
   has_many :artist_credits, -> { where(credited_as: :artist) }, class_name: 'CreatorCredit', inverse_of: :comic
@@ -71,48 +64,24 @@ class Comic < ApplicationRecord
 
   scope :filtered_by_creators, ->(creators) do
     creators_query = Comic.build_creators_query creators
-    find_by_sql "WITH filtered_creators AS (
-                SELECT id
-                FROM creators
-                WHERE
-                name ~* '(#{creators_query})'
-                )
-                SELECT DISTINCT comics.*
-                FROM comics
-                WHERE
-                id IN (
-                  SELECT writer_credits.comic_id
-                  FROM writer_credits JOIN filtered_creators
-                  ON writer_credits.creator_id = filtered_creators.id
-                  UNION ALL
-                  SELECT artist_credits.comic_id
-                  FROM artist_credits JOIN filtered_creators
-                  ON artist_credits.creator_id = filtered_creators.id
-                  UNION ALL
-                  SELECT cover_artist_credits.comic_id
-                  FROM cover_artist_credits JOIN filtered_creators
-                  ON cover_artist_credits.creator_id = filtered_creators.id
-                )
-                ORDER BY title"
+    find_by_sql  "SELECT DISTINCT comics.*
+                 FROM comics
+                 JOIN creator_credits ON comics.id = creator_credits.comic_id
+                 JOIN creators ON creators.id = creator_credits.creator_id
+                 WHERE name ~* '(#{creators_query})'
+                 ORDER BY title"
   end
 
   scope :filtered_by_creators_of_type, ->(creators, type) do
     creators_query = Comic.build_creators_query creators
-    find_by_sql "WITH filtered_creators AS (
-                SELECT id
-                FROM creators
-                WHERE
-                name ~* '(#{creators_query})'
-                )
-                SELECT DISTINCT comics.*
-                FROM comics
-                WHERE
-                id IN (
-                  SELECT #{type}_credits.comic_id
-                  FROM #{type}_credits JOIN filtered_creators
-                  ON #{type}_credits.creator_id = filtered_creators.id
-                )
-                ORDER BY title"
+    find_by_sql  "SELECT DISTINCT comics.*
+                 FROM comics
+                 JOIN creator_credits
+                 ON comics.id = creator_credits.comic_id AND creator_credits.credited_as = '#{type}'
+                 JOIN creators
+                 ON creators.id = creator_credits.creator_id
+                 WHERE name ~* '(#{creators_query})'
+                 ORDER BY title"
   end
 
   def humanized_title

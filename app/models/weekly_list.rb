@@ -35,40 +35,20 @@ class WeeklyList < ApplicationRecord
                .order('publishers.name', :title, :issue_number)
   end
 
-  #def fetch_comics_new
-  #  self.comics.eager_load(:publisher)
-  #             .preload(:writers_new, :artists_new, :cover_artists_new)
-  #             .order('publishers.name', :title, :issue_number)
-  #end
-
   def all_creators
-    Creator.find_by_sql("WITH weekly_comics AS (
-                        SELECT id FROM comics WHERE weekly_list_id = #{self.id}
-                        )
-                        SELECT DISTINCT *
+    Creator.find_by_sql "SELECT DISTINCT creators.*
                         FROM creators
-                        WHERE
-                        id IN (
-                          SELECT writer_credits.creator_id
-                          FROM writer_credits JOIN weekly_comics
-                          ON writer_credits.comic_id = weekly_comics.id
-                          UNION ALL
-                          SELECT artist_credits.creator_id
-                          FROM artist_credits JOIN weekly_comics
-                          ON artist_credits.comic_id = weekly_comics.id
-                          UNION ALL
-                          SELECT cover_artist_credits.creator_id
-                          FROM cover_artist_credits JOIN weekly_comics
-                          ON cover_artist_credits.comic_id = weekly_comics.id
-                        )
-                        ORDER BY name")
+                        JOIN creator_credits
+                        ON creator_credits.creator_id = creators.id
+                        JOIN comics
+                        ON creator_credits.comic_id = comics.id AND comics.weekly_list_id = #{self.id}
+                        ORDER BY name"
   end
 
   def all_publishers
-    Publisher.find_by_sql("SELECT DISTINCT *
+    Publisher.find_by_sql("SELECT DISTINCT publishers.*
                           FROM publishers
-                          WHERE
-                          id IN (SELECT publisher_id FROM comics WHERE weekly_list_id = #{self.id})
+                          JOIN comics ON comics.weekly_list_id = #{self.id}
                           ORDER BY name")
   end
 end
