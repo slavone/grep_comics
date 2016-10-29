@@ -36,14 +36,7 @@ set :repo_url, 'git@github.com:slavone/grep_comics.git'
 # set :keep_releases, 5
 
 namespace :deploy do
-
-  after :restart, :clear_cache do
-    on roles(:web), in: :groups, limit: 3, wait: 10 do
-      # Here we can do anything such as:
-      # within release_path do
-      #   execute :rake, 'cache:clear'
-      # end
-    end
-  end
-
+  before :starting, 'whenever:clear_crontab'
+  after :finishing, 'unicorn:stop'
+  after :finishing, 'unicorn:start'
 end
