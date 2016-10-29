@@ -20,7 +20,10 @@ RSpec.describe WeeklyList, :type => :model do
   end
 
   it 'fetches all publishers' do
-    expect(weekly_list.all_publishers.map &:name).to eq( %w(publisher_1 publisher_2 publisher_3) )
+    Fabricate(:publisher, name: 'not in this list')
+    all_publishers = weekly_list.all_publishers.map(&:name)
+    expect(all_publishers).to eq( %w(publisher_1 publisher_2 publisher_3) )
+    expect(all_publishers).not_to eq( 'not in this list' )
   end
 
   it 'fetches all creators' do
@@ -28,6 +31,9 @@ RSpec.describe WeeklyList, :type => :model do
       %w(writer artist cover_artist).each { |creator_type| arr << (creator_type + "_#{i}") }
       arr
     end.sort
-    expect(weekly_list.all_creators.map &:name).to eq(expected_creators)
+    Fabricate(:creator, name: 'not in this list')
+    all_creators = weekly_list.all_creators.map(&:name)
+    expect(all_creators).to eq(expected_creators)
+    expect(all_creators).not_to include('not in this list')
   end
 end

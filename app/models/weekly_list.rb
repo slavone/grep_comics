@@ -48,7 +48,8 @@ class WeeklyList < ApplicationRecord
   def all_publishers
     Publisher.find_by_sql("SELECT DISTINCT publishers.*
                           FROM publishers
-                          JOIN comics ON comics.weekly_list_id = #{self.id}
+                          JOIN comics
+                          ON comics.weekly_list_id = #{self.id} AND comics.publisher_id = publishers.id
                           ORDER BY name")
   end
 end
