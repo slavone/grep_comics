@@ -104,4 +104,5 @@ ActiveRecord::Schema.define(version: 20161027152719) do
   add_foreign_key "comics", "weekly_lists"
   add_foreign_key "cover_artist_credits", "comics"
   add_foreign_key "cover_artist_credits", "creators"
+  add_foreign_key "creator_credits", "comics"
 end

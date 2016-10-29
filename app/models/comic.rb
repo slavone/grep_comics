@@ -95,14 +95,4 @@ class Comic < ApplicationRecord
   def humanized_item_type
     ITEM_TYPES_MAPPING[item_type]
   end
-
-  def migrate_to_creator_credits
-    [:writer_credits, :artist_credits, :cover_artist_credits].each do |creator_type|
-      self.send(creator_type).each do |old_credit|
-        self.creator_credits.create creator_id: old_credit.creator_id,
-                                    comic_id: old_credit.comic_id,
-                                    credited_as: creator_type.to_s.gsub(/_credits/,'')
-      end
-    end
-  end
 end
