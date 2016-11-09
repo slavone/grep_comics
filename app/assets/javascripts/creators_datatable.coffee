@@ -9,9 +9,9 @@ $(document).on 'ready', ->
     pageLength: 100
     columns: [
       { orderable: true },
-      { orderable: false },
-      { orderable: false },
-      { orderable: false }
+      { orderable: true },
+      { orderable: true },
+      { orderable: true }
     ]
     dom: "<'row'<'col-sm-5'l>>" +
          "<'row'<'col-sm-5'i><'col-sm-7'p>>" +
