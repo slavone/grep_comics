@@ -29,6 +29,8 @@ gem 'carrierwave'
 
 gem 'sidekiq'
 
+gem 'certified'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 

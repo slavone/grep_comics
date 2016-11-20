@@ -1,8 +1,8 @@
 class DiamondComicsParser
-  CURRENT_WEEK = 'http://www.previewsworld.com/shipping/newreleases.txt'.freeze
-  NEXT_WEEK = 'http://www.previewsworld.com/shipping/upcomingreleases.txt'.freeze
-  CATALOG = 'http://www.previewsworld.com/Catalog/'.freeze
-  ROOT_URL = 'http://www.previewsworld.com'.freeze
+  CURRENT_WEEK = 'https://www.previewsworld.com/shipping/newreleases.txt'.freeze
+  NEXT_WEEK = 'https://www.previewsworld.com/shipping/upcomingreleases.txt'.freeze
+  CATALOG = 'https://www.previewsworld.com/Catalog/'.freeze
+  ROOT_URL = 'https://www.previewsworld.com'.freeze
 
   NO_IMAGE_AVAILABLE_PNG_MD5 = 'ce0bf4477ccfac6ce8147649949f840b'.freeze
 
