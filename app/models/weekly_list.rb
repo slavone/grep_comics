@@ -10,7 +10,7 @@
 #
 
 class WeeklyList < ApplicationRecord
-  has_many :comics
+  has_many :comics, dependent: :destroy
   has_many :comics_with_no_covers, -> { where no_cover_available: true }, class_name: 'Comic'
 
   class << self
