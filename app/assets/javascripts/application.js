@@ -15,6 +15,7 @@
 //= require bootstrap-sprockets
 //= require datatables.min.js
 //= require jquery.slimscroll.min.js
+//= require jquery.lazy.min.js
 //= require bootstrap-datepicker/core
 //= require admin_lte.js
 //= require week_picker

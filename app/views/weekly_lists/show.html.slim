@@ -22,7 +22,9 @@ section.content#weekday data-week=@weekly_list&.wednesday_date
           - @comics&.each do |comic|
             tr data-preview= comic.preview
               td
-                = link_to image_tag(comic.cover_thumbnail&.url, class: 'img-responsive', size: "215x330"), comic.cover_image, target: '_blank' if comic.cover_thumbnail
+                - if comic.cover_thumbnail
+                  a target="_blank" href="#{comic.cover_image}"
+                    img.lazy.img-responsive data-src="#{comic.cover_thumbnail&.url}" width="215" height="330"
               td
                 i.fa.fa-plus-circle.fa-2x#toggle_preview
               td = comic.shipping_date

@@ -1,4 +1,6 @@
 $(document).on 'ready', ->
+  $('.lazy').Lazy()
+
   $('.toggle-filters').on 'click', ->
     button = document.getElementById 'toggle-filters-button'
     if button.innerText == 'Show filters'
