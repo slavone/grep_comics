@@ -1,0 +1,17 @@
+[Unit]
+Description=grep comics app
+Requires=network.target
+
+[Service]
+Type=simple
+User=%APP_USER%
+Group=%APP_GROUP%
+WorkingDirectory=/var/www/grep_comics/current
+ExecStart=/bin/bash -lc 'bundle exec unicorn -c /var/www/grep_comics/current/config/unicorn/production.rb'
+Environment=RAILS_ENV=production
+TimeoutSec=30
+RestartSec=15s
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

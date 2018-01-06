@@ -1,0 +1,17 @@
+[Unit]
+Description=Sidekiq for grep_comics app
+Requires=network.target
+
+[Service]
+Type=simple
+User=%APP_USER%
+Group=%APP_GROUP%
+WorkingDirectory=/var/www/grep_comics/current
+ExecStart=/bin/bash -lc 'bundle exec sidekiq -C config/sidekiq.yml'
+Environment=RAILS_ENV=production
+TimeoutSec=30
+RestartSec=15s
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
