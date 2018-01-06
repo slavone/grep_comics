@@ -37,6 +37,6 @@ set :repo_url, 'git@github.com:slavone/grep_comics.git'
 
 namespace :deploy do
   before :starting, 'whenever:clear_crontab'
-  after :finishing, 'unicorn:stop'
-  after :finishing, 'unicorn:start'
+  after :finishing, 'systemd:unicorn:restart'
+  after :finishing, 'systemd:sidekiq:restart'
 end
