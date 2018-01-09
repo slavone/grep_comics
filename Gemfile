@@ -28,8 +28,7 @@ gem 'mini_magick'
 gem 'carrierwave'
 
 gem 'sidekiq'
-
-gem 'certified'
+gem 'redis-rails'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

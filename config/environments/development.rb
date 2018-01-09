@@ -30,6 +30,14 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = false
 
   config.action_mailer.perform_caching = false
+  if ENV['PERFORM_CACHING'] == 'true'
+    config.action_controller.perform_caching = true
+
+    config.cache_store = :redis_store, {
+      :host => "localhost",
+      :port => 6379
+    }
+  end
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
