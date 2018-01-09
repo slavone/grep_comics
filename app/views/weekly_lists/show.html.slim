@@ -1,48 +1,49 @@
 = content_for :sidebar, render('layouts/sidebar')
-section.content#weekday data-week=@weekly_list&.wednesday_date
-  .box
-    .box-header
-      h3.box-title = "Browse releases for #{@weekly_list&.wednesday_date}"
-    .box-body.table-responsive
-      button.btn.btn-primary.toggle-filters#toggle-filters-button data-toggle="offcanvas" Show filters
-      p style='margin-top: 2px;' Hint: you can click to on the logo on the header to toggle the filters sidebar
-      table.table.table-bordered.dataTable#releases
-        thead
-          tr
-            th Cover
-            th Synopsis
-            th Shipping date
-            th Title
-            th#editions Edition type
-            th#publishers Publisher
-            th.creators#writers Writers
-            th.creators#artists Artists
-            th.creators#cover_artists Cover artists
-        tbody
-          - @comics&.each do |comic|
-            = cache comic, expires_in: 1.hour
-              tr data-preview= comic.preview
-                td
-                  = link_to image_tag(comic.cover_thumbnail&.url, class: 'img-responsive', size: "215x330"), comic.cover_image, target: '_blank' if comic.cover_thumbnail
-                td
-                  i.fa.fa-plus-circle.fa-2x#toggle_preview
-                td = comic.shipping_date
-                td
-                  = link_to comic.humanized_title, comic_path(comic)
-                td = comic.humanized_item_type
-                td = comic.publisher&.name
-                td
-                  - comic.writers&.each do |creator|
-                    p
-                      a href=creator_path(creator)
-                        = creator.name
-                td
-                  - comic.artists&.each do |creator|
-                    p
-                      a href=creator_path(creator)
-                        = creator.name
-                td
-                  - comic.cover_artists&.each do |creator|
-                    p
-                      a href=creator_path(creator)
-                        = creator.name
+= cache @weekly_list, expires_in: 5.days
+  section.content#weekday data-week=@weekly_list&.wednesday_date
+    .box
+      .box-header
+        h3.box-title = "Browse releases for #{@weekly_list&.wednesday_date}"
+      .box-body.table-responsive
+        button.btn.btn-primary.toggle-filters#toggle-filters-button data-toggle="offcanvas" Show filters
+        p style='margin-top: 2px;' Hint: you can click to on the logo on the header to toggle the filters sidebar
+        table.table.table-bordered.dataTable#releases
+          thead
+            tr
+              th Cover
+              th Synopsis
+              th Shipping date
+              th Title
+              th#editions Edition type
+              th#publishers Publisher
+              th.creators#writers Writers
+              th.creators#artists Artists
+              th.creators#cover_artists Cover artists
+          tbody
+            - @comics&.each do |comic|
+              = cache comic, expires_in: 5.days
+                tr data-preview= comic.preview
+                  td
+                    = link_to image_tag(comic.cover_thumbnail&.url, class: 'img-responsive', size: "215x330"), comic.cover_image, target: '_blank' if comic.cover_thumbnail
+                  td
+                    i.fa.fa-plus-circle.fa-2x#toggle_preview
+                  td = comic.shipping_date
+                  td
+                    = link_to comic.humanized_title, comic_path(comic)
+                  td = comic.humanized_item_type
+                  td = comic.publisher&.name
+                  td
+                    - comic.writers&.each do |creator|
+                      p
+                        a href=creator_path(creator)
+                          = creator.name
+                  td
+                    - comic.artists&.each do |creator|
+                      p
+                        a href=creator_path(creator)
+                          = creator.name
+                  td
+                    - comic.cover_artists&.each do |creator|
+                      p
+                        a href=creator_path(creator)
+                          = creator.name

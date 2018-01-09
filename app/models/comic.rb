@@ -19,6 +19,7 @@
 #  reprint_number     :integer
 #  cover_thumbnail    :string
 #  no_cover_available :boolean
+#  tsv                :tsvector
 #
 # Foreign Keys
 #
@@ -28,7 +29,7 @@
 
 class Comic < ApplicationRecord
   belongs_to :publisher, optional: true
-  belongs_to :weekly_list, optional: true
+  belongs_to :weekly_list, optional: true, touch: true
 
   include CreatorCredits
   has_many :writers, -> { order(:name) }, through: :writer_credits, source: :creator

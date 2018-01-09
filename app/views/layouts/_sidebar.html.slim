@@ -1,8 +1,9 @@
-aside.main-sidebar
-  .sidebar
-    ul.nav.sidebar-menu
-      li.header Filters
-      = render 'layouts/creators_filters', creators_filters: @creators_filters
-      = render 'layouts/editions_filters'
-      = render 'layouts/publishers_filters', publishers_filters: @publishers_filters
-      li#applied_filters.header Applied filters
+= cache @weekly_list, expires_in: 5.days
+  aside.main-sidebar
+    .sidebar
+      ul.nav.sidebar-menu
+        li.header Filters
+        = render 'layouts/creators_filters', creators_filters: @creators_filters
+        = render 'layouts/editions_filters'
+        = render 'layouts/publishers_filters', publishers_filters: @publishers_filters
+        li#applied_filters.header Applied filters
