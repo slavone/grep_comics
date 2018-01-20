@@ -1,11 +1,10 @@
 source 'https://rubygems.org'
 
-gem 'rails'
-gem 'pg', '~> 0.18'
-gem 'puma', '~> 3.0'
+gem 'rails', '~> 5.1', '>= 5.1.4'
+gem "pg", "~> 0.18"
 gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
-gem 'coffee-rails', '~> 4.1.0'
+gem 'coffee-rails'
 
 gem 'jquery-rails'
 gem 'turbolinks', '~> 5.x'
@@ -30,14 +29,11 @@ gem 'carrierwave'
 gem 'sidekiq'
 gem 'redis-rails'
 
-# Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
-
 gem 'listen', '~> 3.0.5'
 gem 'unicorn'
 
 group :development, :test do
-  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
+  gem 'puma', '~> 3.0'
   gem 'byebug', platform: :mri
   gem 'annotate'
   gem 'rspec-rails'

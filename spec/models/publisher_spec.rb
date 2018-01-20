@@ -4,6 +4,6 @@ RSpec.describe Publisher, :type => :model do
   let(:publisher) { Fabricate :publisher }
 
   it 'has comics association' do
-    expect(publisher.comics.class).to eq(Comic::ActiveRecord_Associations_CollectionProxy)
+    expect(Publisher.reflect_on_association(:comics).macro).to eq(:has_many)
   end
 end
